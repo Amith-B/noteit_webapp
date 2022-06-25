@@ -1,3 +1,13 @@
+:root {
+  --primary-bg: antiquewhite;
+  --tab-theme-bg: #ffc760;
+  --tab-add-bg: #ffffffbc;
+  --tab-inactive-bg: #ffffff9c;
+
+  --outer-curve-size: 20px;
+  --outer-curve-size-half: calc(var(--outer-curve-size) / 2);
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
@@ -5,9 +15,50 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   width: 400px;
+  height: 500px;
+}
+
+#root,
+.App {
+  height: 100%;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
+  scroll-behavior: smooth;
+}
+
+button {
+  border: 0;
+}
+
+.clickable {
+  opacity: 0.9;
+}
+
+.clickable:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.clickable:active {
+  opacity: 0.8;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

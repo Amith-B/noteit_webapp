@@ -1,0 +1,5 @@
+.App {
+  background-color: var(--primary-bg);
+  display: flex;
+  flex-direction: column;
+}

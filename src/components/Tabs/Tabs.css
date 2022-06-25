@@ -1,0 +1,102 @@
+.tab__container {
+  height: 40px;
+  background-color: var(--tab-theme-bg);
+  padding: 0 10px;
+  padding-top: 4px;
+  display: flex;
+  gap: 6px;
+}
+
+.tab-add {
+  background-color: var(--tab-add-bg);
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  align-self: center;
+  border-radius: 50%;
+  font-size: 26px;
+  transform: translateY(-2px);
+}
+
+.tab-close {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  transform: rotate(45deg);
+  border-radius: 50%;
+  padding: 0;
+  color: black;
+  font-weight: bold;
+}
+
+.tab-close:hover {
+  background-color: #0000002f;
+}
+
+.tab-group {
+  display: flex;
+  gap: 6px;
+  overflow: auto;
+}
+
+.tab {
+  height: 32px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  background-color: var(--tab-inactive-bg);
+  white-space: nowrap;
+  max-width: 100px;
+  min-width: 75px;
+  display: flex;
+  align-items: center;
+}
+
+.tab.active .tab-title {
+  transform: translateY(-2px);
+}
+
+.tab.active .tab-close {
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  min-width: 46px;
+}
+
+.tab.active {
+  background-color: var(--primary-bg);
+  height: 36px;
+  border-radius: 6px 6px 0 0;
+  margin: 0;
+  position: relative;
+  outline: none;
+}
+
+.tab::before,
+.tab::after {
+  content: " ";
+  width: var(--outer-curve-size);
+  height: var(--outer-curve-size);
+  background: transparent;
+  display: block;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.tab.active::before {
+  left: calc(-1 * var(--outer-curve-size));
+  bottom: 0px;
+  box-shadow: var(--outer-curve-size-half) var(--outer-curve-size-half)
+    var(--primary-bg);
+}
+
+.tab.active::after {
+  right: calc(-1 * var(--outer-curve-size));
+  bottom: 0px;
+  box-shadow: calc(-1 * var(--outer-curve-size-half))
+    var(--outer-curve-size-half) var(--primary-bg);
+}
