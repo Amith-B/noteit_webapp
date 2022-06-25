@@ -1,0 +1,22 @@
+{
+  "name": "NoteIt",
+  "description": "Extension to take notes",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "icons": {
+    "16": "/logos/logo_16.png",
+    "32": "/logos/logo_32.png",
+    "48": "/logos/logo_48.png",
+    "128": "/logos/logo_128.png"
+  },
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "/logos/logo_16.png",
+      "32": "/logos/logo_32.png",
+      "48": "/logos/logo_48.png",
+      "128": "/logos/logo_128.png"
+    }
+  }
+}
