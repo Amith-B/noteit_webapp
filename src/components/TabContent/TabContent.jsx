@@ -25,7 +25,7 @@ function TabContent({
         title,
         content,
       });
-    }, 1000);
+    }, 200);
 
     return () => clearTimeout(timmer);
     // eslint-disable-next-line
@@ -64,7 +64,7 @@ function TabContent({
           </div>
         </div>
       ) : (
-        <div className="tab-content__no-tab flex-center">No Tab Selected</div>
+        <div className="tab-content__no-tab flex-center">No Note Selected</div>
       )}
     </div>
   );

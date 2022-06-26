@@ -1,11 +1,22 @@
 :root {
+  --outer-curve-size: 20px;
+  --outer-curve-size-half: calc(var(--outer-curve-size) / 2);
+}
+
+.theme.default {
   --primary-bg: antiquewhite;
   --tab-theme-bg: #ffc760;
   --tab-add-bg: #ffffffbc;
   --tab-inactive-bg: #ffffff9c;
+  --text-color: black;
+}
 
-  --outer-curve-size: 20px;
-  --outer-curve-size-half: calc(var(--outer-curve-size) / 2);
+.theme.dark {
+  --primary-bg: rgb(74, 74, 74);
+  --tab-theme-bg: #242424;
+  --tab-add-bg: #ffffffbc;
+  --tab-inactive-bg: #ffffff9c;
+  --text-color: white;
 }
 
 body {

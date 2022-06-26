@@ -1,5 +1,6 @@
 .tab__container {
   height: 40px;
+  min-height: 40px;
   background-color: var(--tab-theme-bg);
   padding: 0 10px;
   padding-top: 4px;
@@ -50,14 +51,17 @@
   min-width: 75px;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .tab.active .tab-title {
-  transform: translateY(-2px);
+  transform: translateY(-2.4px);
+  color: var(--text-color);
 }
 
 .tab.active .tab-close {
-  transform: translateY(-2px) rotate(45deg);
+  transform: translateY(-2.2px) rotate(45deg);
+  color: var(--text-color);
 }
 
 .tab-title {

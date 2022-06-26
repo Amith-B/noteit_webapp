@@ -52,17 +52,15 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
             <div className="tab-title" title={tab.title}>
               {tab.title}
             </div>
-            {tabs.length > 1 && (
-              <div
-                className="clickable tab-close flex-center"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onTabClose(tab.id);
-                }}
-              >
-                +
-              </div>
-            )}
+            <div
+              className="clickable tab-close flex-center"
+              onClick={(event) => {
+                event.stopPropagation();
+                onTabClose(tab.id);
+              }}
+            >
+              +
+            </div>
           </button>
         ))}
       </div>
