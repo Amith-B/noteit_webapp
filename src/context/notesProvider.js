@@ -56,15 +56,23 @@ export default function PuzzleProvider({ children }) {
   }, [notes]);
 
   useEffect(() => {
-    chrome.storage.sync.set({ activeNoteId: activeNoteId }, function () {
-      console.log("Active Note Changed");
-    });
+    const timmer = setTimeout(() => {
+      chrome.storage.sync.set({ activeNoteId: activeNoteId }, function () {
+        console.log("Active Note Changed");
+      });
+    }, 100);
+
+    return () => clearTimeout(timmer);
   }, [activeNoteId]);
 
   useEffect(() => {
-    chrome.storage.sync.set({ activeTheme: activeTheme }, function () {
-      console.log("Theme Changed");
-    });
+    const timmer = setTimeout(() => {
+      chrome.storage.sync.set({ activeTheme: activeTheme }, function () {
+        console.log("Theme Changed");
+      });
+    }, 100);
+
+    return () => clearTimeout(timmer);
   }, [activeTheme]);
 
   useEffect(() => {
