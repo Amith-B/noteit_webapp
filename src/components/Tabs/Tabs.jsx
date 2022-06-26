@@ -83,29 +83,30 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
         className="clickable notes-menu__toggle flex-center"
         onClick={() => setMenuOpen(true)}
       ></button>
-      {menuOpen && (
-        <div className="notes-menu__overlay" onClick={() => setMenuOpen(false)}>
-          <div className="notes-menu">
-            <h4>Choose Theme</h4>
-            <hr />
-            {themes.map((theme) => (
-              <div
-                className={
-                  "clickable notes-menu-item " +
-                  (theme === activeTheme ? "active" : "")
-                }
-                key={theme}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setActiveTheme(theme);
-                }}
-              >
-                {theme.charAt(0).toUpperCase() + theme.slice(1)}
-              </div>
-            ))}
-          </div>
+      <div
+        className={"notes-menu__overlay " + (menuOpen ? "visible" : "")}
+        onClick={() => setMenuOpen(false)}
+      >
+        <div className="notes-menu">
+          <h4>Choose Theme</h4>
+          <hr />
+          {themes.map((theme) => (
+            <div
+              className={
+                "clickable notes-menu-item " +
+                (theme === activeTheme ? "active" : "")
+              }
+              key={theme}
+              onClick={(event) => {
+                event.stopPropagation();
+                setActiveTheme(theme);
+              }}
+            >
+              {theme.charAt(0).toUpperCase() + theme.slice(1)}
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </section>
   );
 }

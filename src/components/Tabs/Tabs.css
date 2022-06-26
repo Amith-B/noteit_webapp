@@ -48,9 +48,17 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #00000085;
   left: 0;
   top: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+  z-index: 20;
+}
+
+.notes-menu__overlay.visible {
+  visibility: visible;
+  opacity: 1;
 }
 
 .notes-menu {
@@ -60,6 +68,15 @@
   background-color: var(--primary-bg);
   border-radius: 6px;
   color: var(--text-color);
+  transform: scaleY(0);
+  box-shadow: -4px 4px 12px #181616;
+  overflow: hidden;
+}
+
+.notes-menu__overlay.visible .notes-menu {
+  transform: scaleY(1);
+  transform-origin: 0% 0%;
+  transition: all 0.2s ease-in-out;
 }
 
 .notes-menu-item,

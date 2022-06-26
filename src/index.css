@@ -11,6 +11,22 @@
   --text-color: black;
 }
 
+.theme.blue {
+  --primary-bg: #c6cdff;
+  --tab-theme-bg: #4266ff;
+  --tab-add-bg: #ffffffbc;
+  --tab-inactive-bg: #ffffff9c;
+  --text-color: black;
+}
+
+.theme.pink {
+  --primary-bg: #ffaef4;
+  --tab-theme-bg: deeppink;
+  --tab-add-bg: #ffffffbc;
+  --tab-inactive-bg: #ffffff9c;
+  --text-color: black;
+}
+
 .theme.dark {
   --primary-bg: rgb(74, 74, 74);
   --tab-theme-bg: #242424;
