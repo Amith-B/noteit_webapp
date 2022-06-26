@@ -1,7 +1,6 @@
+/*global chrome*/
 import NotesContext from "./notesContext";
-
 import { useState, useEffect } from "react";
-
 import initialData from "./initialData";
 
 export default function PuzzleProvider({ children }) {
@@ -9,6 +8,7 @@ export default function PuzzleProvider({ children }) {
   const [activeNoteId, setActiveNoteId] = useState(initialData.activeNoteId);
   const themes = initialData.themes;
   const [activeTheme, setActiveTheme] = useState(initialData.activeTheme);
+  const [isSaved, setIsSaved] = useState(true);
 
   const addNote = () => {
     setNotes((lst) => {
@@ -44,8 +44,40 @@ export default function PuzzleProvider({ children }) {
   };
 
   useEffect(() => {
-    console.log(notes);
+    setIsSaved(false);
+    const timmer = setTimeout(() => {
+      chrome.storage.sync.set({ notes: notes }, function () {
+        console.log("Notes Updated");
+      });
+      setIsSaved(true);
+    }, 1000);
+
+    return () => clearTimeout(timmer);
   }, [notes]);
+
+  useEffect(() => {
+    chrome.storage.sync.set({ activeNoteId: activeNoteId }, function () {
+      console.log("Active Note Changed");
+    });
+  }, [activeNoteId]);
+
+  useEffect(() => {
+    chrome.storage.sync.set({ activeTheme: activeTheme }, function () {
+      console.log("Theme Changed");
+    });
+  }, [activeTheme]);
+
+  useEffect(() => {
+    chrome.storage.sync.get(["notes"], function (result) {
+      setNotes(result.notes);
+    });
+    chrome.storage.sync.get(["activeTheme"], function (result) {
+      setActiveTheme(result.activeTheme);
+    });
+    chrome.storage.sync.get(["activeNoteId"], function (result) {
+      setActiveNoteId(result.activeNoteId);
+    });
+  }, []);
 
   return (
     <NotesContext.Provider
@@ -57,6 +89,8 @@ export default function PuzzleProvider({ children }) {
         themes,
         activeTheme,
         setActiveTheme,
+        isSaved,
+        setIsSaved,
         addNote,
         closeTab,
         updateNotes,

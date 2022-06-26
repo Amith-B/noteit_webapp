@@ -1,7 +1,7 @@
 const initialData = {
   notes: [],
   themes: ["default", "blue", "pink", "dark"],
-  activeTheme: "dark",
+  activeTheme: "default",
   activeNoteId: "",
 };
 
