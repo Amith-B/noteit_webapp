@@ -56,20 +56,24 @@ export default function PuzzleProvider({ children }) {
   }, [notes]);
 
   useEffect(() => {
+    setIsSaved(false);
     const timmer = setTimeout(() => {
       chrome.storage.sync.set({ activeNoteId: activeNoteId }, function () {
         console.log("Active Note Changed");
       });
+      setIsSaved(true);
     }, 100);
 
     return () => clearTimeout(timmer);
   }, [activeNoteId]);
 
   useEffect(() => {
+    setIsSaved(false);
     const timmer = setTimeout(() => {
       chrome.storage.sync.set({ activeTheme: activeTheme }, function () {
         console.log("Theme Changed");
       });
+      setIsSaved(true);
     }, 100);
 
     return () => clearTimeout(timmer);
