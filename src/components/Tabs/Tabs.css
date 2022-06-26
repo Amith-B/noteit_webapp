@@ -6,6 +6,7 @@
   padding-top: 4px;
   display: flex;
   gap: 6px;
+  justify-content: space-between;
 }
 
 .tab-add {
@@ -17,6 +18,57 @@
   border-radius: 50%;
   font-size: 26px;
   transform: translateY(-2px);
+}
+
+.notes-menu__toggle {
+  background-color: var(--tab-theme-bg);
+  height: 30px;
+  align-self: center;
+  border-radius: 4px;
+  font-size: 20px;
+  transform: translateY(-2px);
+  padding: 0;
+}
+
+.notes-menu__toggle::after {
+  content: "\2807";
+  transform: translate(2px, -1px);
+  color: var(--text-color);
+  padding-left: 4px;
+}
+
+.notes-menu__toggle:hover::after {
+  background-color: var(--tab-inactive-bg);
+  border-radius: 4px;
+  opacity: 0.6;
+  color: unset;
+}
+
+.notes-menu__overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #00000085;
+  left: 0;
+  top: 0;
+}
+
+.notes-menu {
+  position: absolute;
+  right: 18px;
+  top: 30px;
+  background-color: var(--primary-bg);
+  border-radius: 6px;
+  color: var(--text-color);
+}
+
+.notes-menu-item,
+.notes-menu h4 {
+  padding: 4px 10px;
+}
+
+.notes-menu .active {
+  background-color: var(--tab-theme-bg);
 }
 
 .tab-close {
@@ -33,6 +85,12 @@
 
 .tab-close:hover {
   background-color: #0000002f;
+}
+
+.tab__controls {
+  display: flex;
+  gap: 6px;
+  overflow: auto;
 }
 
 .tab-group {

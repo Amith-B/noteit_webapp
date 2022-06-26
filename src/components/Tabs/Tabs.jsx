@@ -1,7 +1,16 @@
 import "./Tabs.css";
-import React, { useRef, useEffect, useCallback } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useCallback,
+  useState,
+  useContext,
+} from "react";
+import NotesContext from "../../context/notesContext";
 
 function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
+  const { themes, activeTheme, setActiveTheme } = useContext(NotesContext);
+  const [menuOpen, setMenuOpen] = useState(false);
   const tabGroup = useRef();
 
   const handleHorizontalScroll = useCallback(
@@ -39,34 +48,64 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
 
   return (
     <section className="tab__container">
-      <div className="tab-group hide-scrollbar" ref={tabGroup}>
-        {tabs.map((tab) => (
-          <button
-            className={
-              "tab " + (activeTabId === tab.id ? "active" : "clickable")
-            }
-            key={tab.id}
-            onClick={() => onTabClick(tab.id)}
-            tabIndex={activeTabId === tab.id ? "-1" : "0"}
-          >
-            <div className="tab-title" title={tab.title}>
-              {tab.title}
-            </div>
-            <div
-              className="clickable tab-close flex-center"
-              onClick={(event) => {
-                event.stopPropagation();
-                onTabClose(tab.id);
-              }}
+      <div className="tab__controls">
+        {" "}
+        <div className="tab-group hide-scrollbar" ref={tabGroup}>
+          {tabs.map((tab) => (
+            <button
+              className={
+                "tab " + (activeTabId === tab.id ? "active" : "clickable")
+              }
+              key={tab.id}
+              onClick={() => onTabClick(tab.id)}
+              tabIndex={activeTabId === tab.id ? "-1" : "0"}
             >
-              +
-            </div>
-          </button>
-        ))}
+              <div className="tab-title" title={tab.title}>
+                {tab.title}
+              </div>
+              <div
+                className="clickable tab-close flex-center"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onTabClose(tab.id);
+                }}
+              >
+                +
+              </div>
+            </button>
+          ))}
+        </div>
+        <button className="clickable tab-add flex-center" onClick={onAddTab}>
+          +
+        </button>
       </div>
-      <button className="clickable tab-add flex-center" onClick={onAddTab}>
-        +
-      </button>
+      <button
+        className="clickable notes-menu__toggle flex-center"
+        onClick={() => setMenuOpen(true)}
+      ></button>
+      {menuOpen && (
+        <div className="notes-menu__overlay" onClick={() => setMenuOpen(false)}>
+          <div className="notes-menu">
+            <h4>Choose Theme</h4>
+            <hr />
+            {themes.map((theme) => (
+              <div
+                className={
+                  "clickable notes-menu-item " +
+                  (theme === activeTheme ? "active" : "")
+                }
+                key={theme}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setActiveTheme(theme);
+                }}
+              >
+                {theme.charAt(0).toUpperCase() + theme.slice(1)}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
