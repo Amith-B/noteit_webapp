@@ -29,6 +29,13 @@ function Notes() {
 
   const handleNotesDataChange = (tabId, data) => {
     if (tabId) {
+      if (
+        activeNoteData &&
+        activeNoteData.title === data.title &&
+        activeNoteData.content === data.content
+      ) {
+        return;
+      }
       updateNotes(tabId, data.title, data.content);
     }
   };
