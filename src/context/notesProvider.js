@@ -46,9 +46,11 @@ export default function PuzzleProvider({ children }) {
   useEffect(() => {
     setIsSaved(false);
     const timmer = setTimeout(() => {
-      chrome.storage.sync.set({ notes: notes }, function () {
-        console.log("Notes Updated");
-      });
+      chrome &&
+        chrome.storage &&
+        chrome.storage.sync.set({ notes: notes }, function () {
+          console.log("Notes Updated");
+        });
       setIsSaved(true);
     }, 1000);
 
@@ -58,9 +60,11 @@ export default function PuzzleProvider({ children }) {
   useEffect(() => {
     setIsSaved(false);
     const timmer = setTimeout(() => {
-      chrome.storage.sync.set({ activeNoteId: activeNoteId }, function () {
-        console.log("Active Note Changed");
-      });
+      chrome &&
+        chrome.storage &&
+        chrome.storage.sync.set({ activeNoteId: activeNoteId }, function () {
+          console.log("Active Note Changed");
+        });
       setIsSaved(true);
     }, 100);
 
@@ -70,9 +74,11 @@ export default function PuzzleProvider({ children }) {
   useEffect(() => {
     setIsSaved(false);
     const timmer = setTimeout(() => {
-      chrome.storage.sync.set({ activeTheme: activeTheme }, function () {
-        console.log("Theme Changed");
-      });
+      chrome &&
+        chrome.storage &&
+        chrome.storage.sync.set({ activeTheme: activeTheme }, function () {
+          console.log("Theme Changed");
+        });
       setIsSaved(true);
     }, 100);
 
@@ -80,15 +86,17 @@ export default function PuzzleProvider({ children }) {
   }, [activeTheme]);
 
   useEffect(() => {
-    chrome.storage.sync.get(["notes"], function (result) {
-      setNotes(result.notes);
-    });
-    chrome.storage.sync.get(["activeTheme"], function (result) {
-      setActiveTheme(result.activeTheme);
-    });
-    chrome.storage.sync.get(["activeNoteId"], function (result) {
-      setActiveNoteId(result.activeNoteId);
-    });
+    if (chrome.storage) {
+      chrome.storage.sync.get(["notes"], function (result) {
+        setNotes(result.notes);
+      });
+      chrome.storage.sync.get(["activeTheme"], function (result) {
+        setActiveTheme(result.activeTheme);
+      });
+      chrome.storage.sync.get(["activeNoteId"], function (result) {
+        setActiveNoteId(result.activeNoteId);
+      });
+    }
   }, []);
 
   return (
