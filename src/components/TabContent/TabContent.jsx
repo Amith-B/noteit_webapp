@@ -47,7 +47,6 @@ function TabContent({
               type="text"
               maxLength="40"
               minLength="1"
-              key={activeTabId}
               value={title}
               onChange={(event) => {
                 setTitle(event.target.value);
@@ -59,7 +58,6 @@ function TabContent({
             <textarea
               id="content"
               className={"tab-content-input " + (!content ? "empty" : "")}
-              key={activeTabId}
               value={content}
               onChange={(event) => {
                 setContent(event.target.value);

@@ -54,6 +54,7 @@ function Notes() {
         onTabClose={handleTabClose}
       />
       <TabContent
+        key={activeNoteId}
         activeTabId={activeNoteId}
         notesTitle={activeNoteData ? activeNoteData.title : ""}
         notesContent={activeNoteData ? activeNoteData.content : ""}
