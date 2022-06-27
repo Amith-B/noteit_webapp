@@ -86,13 +86,19 @@ export default function PuzzleProvider({ children }) {
   useEffect(() => {
     if (chrome.storage) {
       chrome.storage.sync.get(["notes"], function (result) {
-        setNotes(result.notes);
+        if (result.notes) {
+          setNotes(result.notes);
+        }
       });
       chrome.storage.sync.get(["activeTheme"], function (result) {
-        setActiveTheme(result.activeTheme);
+        if (result.activeTheme) {
+          setActiveTheme(result.activeTheme);
+        }
       });
       chrome.storage.sync.get(["activeNoteId"], function (result) {
-        setActiveNoteId(result.activeNoteId);
+        if (result.activeNoteId) {
+          setActiveNoteId(result.activeNoteId);
+        }
       });
     }
   }, []);
