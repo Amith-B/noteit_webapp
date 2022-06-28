@@ -8,7 +8,7 @@ export default function PuzzleProvider({ children }) {
   const [activeNoteId, setActiveNoteId] = useState(initialData.activeNoteId);
   const themes = initialData.themes;
   const [activeTheme, setActiveTheme] = useState(initialData.activeTheme);
-  const [isSaved, setIsSaved] = useState(true);
+  const [isSaved, setIsSaved] = useState(0); // 0 - not saved, 1 - saved, 2 - error
 
   const addNote = () => {
     setNotes((lst) => {
@@ -44,14 +44,19 @@ export default function PuzzleProvider({ children }) {
   };
 
   useEffect(() => {
-    setIsSaved(false);
+    setIsSaved(0);
     const timmer = setTimeout(() => {
       chrome &&
         chrome.storage &&
         chrome.storage.local.set({ notes: notes }, function () {
           console.log("Notes Updated");
+          const error = chrome.runtime.lastError;
+          if (error) {
+            console.log("Storage Exceeded");
+            setIsSaved(2);
+          }
         });
-      setIsSaved(true);
+      setIsSaved(1);
     }, 1000);
 
     return () => clearTimeout(timmer);
@@ -70,14 +75,14 @@ export default function PuzzleProvider({ children }) {
   }, [activeNoteId]);
 
   useEffect(() => {
-    setIsSaved(false);
+    setIsSaved(0);
     const timmer = setTimeout(() => {
       chrome &&
         chrome.storage &&
         chrome.storage.local.set({ activeTheme: activeTheme }, function () {
           console.log("Theme Changed");
         });
-      setIsSaved(true);
+      setIsSaved(1);
     }, 100);
 
     return () => clearTimeout(timmer);

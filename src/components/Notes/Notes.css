@@ -16,19 +16,6 @@
   border-radius: 6px;
 }
 
-.save-status.show {
-  opacity: 1;
-}
-
-.save-status.hide {
-  animation: hide 1s ease-out 1s forwards;
-}
-
-@keyframes hide {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.save-status.error {
+  color: red;
 }

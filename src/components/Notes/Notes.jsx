@@ -47,8 +47,12 @@ function Notes() {
 
   return (
     <div className={"Note theme " + activeTheme}>
-      <div className={"save-status " + (isSaved ? "hide" : "show")}>
-        {isSaved ? "Saved✔️" : "Saving..."}
+      <div className={"save-status " + (isSaved === 2 ? "error" : "")}>
+        {isSaved === 1
+          ? "Saved✔️"
+          : isSaved === 0
+          ? "Saving..."
+          : (isSaved === 2 && "Storage Exceeded") || ""}
       </div>
       <Tabs
         tabs={notes}
