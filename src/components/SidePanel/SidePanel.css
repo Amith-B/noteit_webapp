@@ -1,0 +1,30 @@
+.sidepanel__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-100%);
+  transition: all 0.2s ease-in-out;
+}
+
+.sidepanel__overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: unset;
+}
+
+.sidepanel {
+  height: 100%;
+  width: 50%;
+  background-color: var(--tab-theme-bg);
+  box-shadow: var(--shadow);
+  color: var(--text-color);
+}
+
+.panel-item {
+  padding: 7px 8px;
+}

@@ -10,11 +10,13 @@ import React, {
 import NotesContext from "../../context/notesContext";
 import verticalDot from "../../assets/vertical_dots.svg";
 import hamburger from "../../assets/hamburger.svg";
+import SidePanel from "../SidePanel/SidePanel";
 
 function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
   const { themes, activeTheme, setActiveTheme, notes } =
     useContext(NotesContext);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
   const [maxLimit, setMaxLimit] = useState(0);
   const [usedSpace, setUsedSpace] = useState(0);
   const tabGroup = useRef();
@@ -67,7 +69,7 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
     <section className="tab__container">
       <button
         className="clickable notes-panel__toggle flex-center"
-        onClick={() => setMenuOpen(true)}
+        onClick={() => setPanelOpen(true)}
       >
         <img style={{ height: "16px" }} src={hamburger} alt="3-dot" />
       </button>
@@ -143,6 +145,7 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
           </span>
         </div>
       </div>
+      <SidePanel open={panelOpen} onClose={() => setPanelOpen(false)} />
     </section>
   );
 }
