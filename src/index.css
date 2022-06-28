@@ -27,6 +27,22 @@
   --text-color: black;
 }
 
+.theme.purple {
+  --primary-bg: #e9c6ff;
+  --tab-theme-bg: #7c51d5;
+  --tab-add-bg: #ffffffbc;
+  --tab-inactive-bg: #ffffff9c;
+  --text-color: #000;
+}
+
+.theme.darkgreen {
+  --primary-bg: #5e7971;
+  --tab-theme-bg: #18473c;
+  --tab-add-bg: #ffffffbc;
+  --tab-inactive-bg: #ffffff9c;
+  --text-color: white;
+}
+
 .theme.dark {
   --primary-bg: rgb(74, 74, 74);
   --tab-theme-bg: #242424;
