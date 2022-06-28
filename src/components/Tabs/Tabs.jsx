@@ -8,6 +8,8 @@ import React, {
   useContext,
 } from "react";
 import NotesContext from "../../context/notesContext";
+import verticalDot from "../../assets/vertical_dots.svg";
+import hamburger from "../../assets/hamburger.svg";
 
 function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
   const { themes, activeTheme, setActiveTheme, notes } =
@@ -63,6 +65,12 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
 
   return (
     <section className="tab__container">
+      <button
+        className="clickable notes-panel__toggle flex-center"
+        onClick={() => setMenuOpen(true)}
+      >
+        <img style={{ height: "16px" }} src={hamburger} alt="3-dot" />
+      </button>
       <div className="tab__controls">
         {" "}
         <div className="tab-group hide-scrollbar" ref={tabGroup}>
@@ -97,7 +105,9 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
       <button
         className="clickable notes-menu__toggle flex-center"
         onClick={() => setMenuOpen(true)}
-      ></button>
+      >
+        <img style={{ height: "16px" }} src={verticalDot} alt="3-dot" />
+      </button>
       <div
         className={"notes-menu__overlay " + (menuOpen ? "visible" : "")}
         onClick={() => setMenuOpen(false)}

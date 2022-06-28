@@ -20,21 +20,20 @@
   transform: translateY(-2px);
 }
 
-.notes-menu__toggle {
+.notes-menu__toggle,
+.notes-panel__toggle {
   background-color: var(--tab-theme-bg);
   height: 30px;
   align-self: center;
   border-radius: 4px;
-  font-size: 20px;
   transform: translateY(-2px);
-  padding: 0;
+  filter: var(--icon-filter);
+  background-color: transparent;
+  padding: 0 4px;
+  padding-left: 10px;
 }
-
-.notes-menu__toggle::after {
-  content: "\2807";
-  transform: translate(2px, -1px);
-  color: var(--text-color);
-  padding-left: 4px;
+.notes-panel__toggle {
+  padding-left: 0;
 }
 
 .notes-menu__toggle:hover::after {
@@ -108,6 +107,7 @@
   display: flex;
   gap: 6px;
   overflow: auto;
+  flex-grow: 1;
 }
 
 .tab-group {
