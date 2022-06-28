@@ -48,7 +48,7 @@ export default function PuzzleProvider({ children }) {
     const timmer = setTimeout(() => {
       chrome &&
         chrome.storage &&
-        chrome.storage.sync.set({ notes: notes }, function () {
+        chrome.storage.local.set({ notes: notes }, function () {
           console.log("Notes Updated");
         });
       setIsSaved(true);
@@ -61,7 +61,7 @@ export default function PuzzleProvider({ children }) {
     const timmer = setTimeout(() => {
       chrome &&
         chrome.storage &&
-        chrome.storage.sync.set({ activeNoteId: activeNoteId }, function () {
+        chrome.storage.local.set({ activeNoteId: activeNoteId }, function () {
           console.log("Active Note Changed");
         });
     }, 100);
@@ -74,7 +74,7 @@ export default function PuzzleProvider({ children }) {
     const timmer = setTimeout(() => {
       chrome &&
         chrome.storage &&
-        chrome.storage.sync.set({ activeTheme: activeTheme }, function () {
+        chrome.storage.local.set({ activeTheme: activeTheme }, function () {
           console.log("Theme Changed");
         });
       setIsSaved(true);
@@ -85,17 +85,17 @@ export default function PuzzleProvider({ children }) {
 
   useEffect(() => {
     if (chrome.storage) {
-      chrome.storage.sync.get(["notes"], function (result) {
+      chrome.storage.local.get(["notes"], function (result) {
         if (result.notes) {
           setNotes(result.notes);
         }
       });
-      chrome.storage.sync.get(["activeTheme"], function (result) {
+      chrome.storage.local.get(["activeTheme"], function (result) {
         if (result.activeTheme) {
           setActiveTheme(result.activeTheme);
         }
       });
-      chrome.storage.sync.get(["activeNoteId"], function (result) {
+      chrome.storage.local.get(["activeNoteId"], function (result) {
         if (result.activeNoteId) {
           setActiveNoteId(result.activeNoteId);
         }
