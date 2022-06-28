@@ -7,6 +7,7 @@ import NotesContext from "../../context/notesContext";
 function Notes() {
   const {
     activeTheme,
+    isSaved,
     notes,
     addNote,
     closeTab,
@@ -46,6 +47,9 @@ function Notes() {
 
   return (
     <div className={"Note theme " + activeTheme}>
+      <div className={"save-status " + (isSaved ? "hide" : "show")}>
+        {isSaved ? "Saved✔️" : "Saving..."}
+      </div>
       <Tabs
         tabs={notes}
         activeTabId={activeNoteId}

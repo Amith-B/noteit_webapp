@@ -5,3 +5,30 @@
   background-color: var(--primary-bg);
   position: relative;
 }
+
+.save-status {
+  color: #19ff00;
+  background: black;
+  position: absolute;
+  right: 12px;
+  top: 42px;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.save-status.show {
+  opacity: 1;
+}
+
+.save-status.hide {
+  animation: hide 1s ease-out 1s forwards;
+}
+
+@keyframes hide {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

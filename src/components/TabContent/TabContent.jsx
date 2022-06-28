@@ -1,6 +1,5 @@
 import "./TabContent.css";
-import React, { useState, useEffect, useContext } from "react";
-import NotesContext from "../../context/notesContext";
+import React, { useState, useEffect } from "react";
 
 function TabContent({
   activeTabId,
@@ -10,7 +9,6 @@ function TabContent({
 }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const { isSaved } = useContext(NotesContext);
 
   useEffect(() => {
     if (notesTitle) {
@@ -35,9 +33,6 @@ function TabContent({
 
   return (
     <div className="tab-content__container">
-      <div className={"save-status " + (isSaved ? "hide" : "show")}>
-        {isSaved ? "Saved✔️" : "Saving..."}
-      </div>
       {activeTabId ? (
         <div style={{ height: "100%" }}>
           <div className="tab-content__title-container">
