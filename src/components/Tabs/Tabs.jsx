@@ -12,9 +12,18 @@ import verticalDot from "../../assets/vertical_dots.svg";
 import hamburger from "../../assets/hamburger.svg";
 import SidePanel from "../SidePanel/SidePanel";
 
-function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
-  const { themes, activeTheme, setActiveTheme, notes } =
-    useContext(NotesContext);
+function Tabs({ onAddTab }) {
+  const {
+    themes,
+    activeTheme,
+    setActiveTheme,
+    notes,
+    activeNoteId,
+    activeFolderId,
+    closeTab,
+    setActiveNoteId,
+    addNote,
+  } = useContext(NotesContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [maxLimit, setMaxLimit] = useState(0);
@@ -63,7 +72,7 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
     if (activeTab) {
       activeTab.scrollIntoView();
     }
-  }, [activeTabId]);
+  }, [activeNoteId, activeFolderId]);
 
   return (
     <section className="tab__container">
@@ -76,33 +85,37 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
       <div className="tab__controls">
         {" "}
         <div className="tab-group hide-scrollbar" ref={tabGroup}>
-          {tabs.map((tab) => (
-            <button
-              className={
-                "tab " + (activeTabId === tab.id ? "active" : "clickable")
-              }
-              key={tab.id}
-              onClick={() => onTabClick(tab.id)}
-              tabIndex={activeTabId === tab.id ? "-1" : "0"}
-            >
-              <div className="tab-title" title={tab.title}>
-                {tab.title}
-              </div>
-              <div
-                className="clickable tab-close flex-center"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onTabClose(tab.id);
-                }}
+          {activeFolderId &&
+            notes[activeFolderId] &&
+            notes[activeFolderId].map((note) => (
+              <button
+                className={
+                  "tab " + (activeNoteId === note.id ? "active" : "clickable")
+                }
+                key={note.id}
+                onClick={() => setActiveNoteId(note.id)}
+                tabIndex={activeNoteId === note.id ? "-1" : "0"}
               >
-                +
-              </div>
-            </button>
-          ))}
+                <div className="tab-title" title={note.title}>
+                  {note.title}
+                </div>
+                <div
+                  className="clickable tab-close flex-center"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    closeTab(note.id);
+                  }}
+                >
+                  +
+                </div>
+              </button>
+            ))}
         </div>
-        <button className="clickable tab-add flex-center" onClick={onAddTab}>
-          +
-        </button>
+        {activeFolderId && (
+          <button className="clickable tab-add flex-center" onClick={addNote}>
+            +
+          </button>
+        )}
       </div>
       <button
         className="clickable notes-menu__toggle flex-center"
@@ -114,7 +127,12 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
         className={"notes-menu__overlay " + (menuOpen ? "visible" : "")}
         onClick={() => setMenuOpen(false)}
       >
-        <div className="notes-menu">
+        <div
+          className="notes-menu"
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
           <h4>Choose Theme</h4>
           <hr />
           {themes.map((theme) => (
@@ -124,8 +142,7 @@ function Tabs({ tabs, activeTabId, onAddTab, onTabClick, onTabClose }) {
                 (theme === activeTheme ? "active" : "")
               }
               key={theme}
-              onClick={(event) => {
-                event.stopPropagation();
+              onClick={() => {
                 setActiveTheme(theme);
               }}
             >

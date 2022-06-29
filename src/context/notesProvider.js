@@ -6,41 +6,73 @@ import initialData from "./initialData";
 export default function PuzzleProvider({ children }) {
   const [notes, setNotes] = useState(initialData.notes);
   const [activeNoteId, setActiveNoteId] = useState(initialData.activeNoteId);
+  const [activeFolderId, setActiveFolderId] = useState(
+    initialData.activeFolderId
+  );
   const themes = initialData.themes;
   const [activeTheme, setActiveTheme] = useState(initialData.activeTheme);
   const [isSaved, setIsSaved] = useState(0); // 0 - not saved, 1 - saved, 2 - error
 
   const addNote = () => {
-    setNotes((lst) => {
-      const notesList = [...lst];
-      const newNoteId = new Date().getTime().toString();
-      notesList.push({ id: newNoteId, title: "New Note", content: "" });
+    const data = { ...notes };
+    const newNoteId = new Date().getTime().toString();
+    if (activeFolderId && Reflect.has(data, activeFolderId)) {
+      data[activeFolderId].push({
+        id: newNoteId,
+        title: "New Note",
+        content: "",
+      });
       setActiveNoteId(newNoteId);
-      return notesList;
-    });
+      setNotes(data);
+    }
+  };
+
+  const addFolder = () => {
+    const data = { ...notes };
+    const newFolderId = "newFolder_" + new Date().getTime().toString();
+    data[newFolderId] = [];
+    setNotes(data);
+    setActiveFolderId(newFolderId);
   };
 
   const closeTab = (noteId) => {
-    setNotes(notes.filter((note) => note.id !== noteId));
-    if (activeNoteId === noteId) {
-      setActiveNoteId("");
+    if (activeFolderId && Reflect.has(notes, activeFolderId)) {
+      const data = { ...notes };
+      data[activeFolderId] = data[activeFolderId].filter(
+        (note) => note.id !== noteId
+      );
+      setNotes(data);
+      if (activeNoteId === noteId) {
+        setActiveNoteId("");
+      }
+    }
+  };
+
+  const closeFolder = (folderId) => {
+    const data = { ...notes };
+    Reflect.deleteProperty(data, folderId);
+    setNotes(data);
+    if (folderId === activeFolderId) {
+      setActiveFolderId("");
     }
   };
 
   const updateNotes = (noteId, title, content) => {
-    const updatedNotesList = notes.map((note) => {
-      if (note.id === noteId) {
-        return {
-          id: noteId,
-          title,
-          content,
-        };
-      }
+    if (activeFolderId && Reflect.has(notes, activeFolderId)) {
+      const data = { ...notes };
+      data[activeFolderId] = data[activeFolderId].map((note) => {
+        if (note.id === noteId) {
+          return {
+            id: noteId,
+            title,
+            content,
+          };
+        }
 
-      return note;
-    });
-
-    setNotes(updatedNotesList);
+        return note;
+      });
+      setNotes(data);
+    }
   };
 
   useEffect(() => {
@@ -56,6 +88,7 @@ export default function PuzzleProvider({ children }) {
             setIsSaved(2);
           }
         });
+      console.log(notes);
       setIsSaved(1);
     }, 1000);
 
@@ -73,6 +106,21 @@ export default function PuzzleProvider({ children }) {
 
     return () => clearTimeout(timmer);
   }, [activeNoteId]);
+
+  useEffect(() => {
+    const timmer = setTimeout(() => {
+      chrome &&
+        chrome.storage &&
+        chrome.storage.local.set(
+          { activeFolderId: activeFolderId },
+          function () {
+            console.log("Active Folder Changed");
+          }
+        );
+    }, 100);
+
+    return () => clearTimeout(timmer);
+  }, [activeFolderId]);
 
   useEffect(() => {
     setIsSaved(0);
@@ -105,6 +153,11 @@ export default function PuzzleProvider({ children }) {
           setActiveNoteId(result.activeNoteId);
         }
       });
+      chrome.storage.local.get(["activeFolderId"], function (result) {
+        if (result.activeFolderId) {
+          setActiveFolderId(result.activeFolderId);
+        }
+      });
     }
   }, []);
 
@@ -115,13 +168,17 @@ export default function PuzzleProvider({ children }) {
         setNotes,
         activeNoteId,
         setActiveNoteId,
+        activeFolderId,
+        setActiveFolderId,
         themes,
         activeTheme,
         setActiveTheme,
         isSaved,
         setIsSaved,
         addNote,
+        addFolder,
         closeTab,
+        closeFolder,
         updateNotes,
       }}
     >

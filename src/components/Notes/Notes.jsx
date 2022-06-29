@@ -9,24 +9,10 @@ function Notes() {
     activeTheme,
     isSaved,
     notes,
-    addNote,
-    closeTab,
     updateNotes,
     activeNoteId,
-    setActiveNoteId,
+    activeFolderId,
   } = useContext(NotesContext);
-
-  const handleAddTab = () => {
-    addNote();
-  };
-
-  const handleTabChange = (tabId) => {
-    setActiveNoteId(tabId);
-  };
-
-  const handleTabClose = (tabId) => {
-    closeTab(tabId);
-  };
 
   const handleNotesDataChange = (tabId, data) => {
     if (tabId) {
@@ -42,8 +28,12 @@ function Notes() {
   };
 
   const activeNoteData = useMemo(() => {
-    return notes.find((note) => note.id === activeNoteId);
-  }, [notes, activeNoteId]);
+    if (activeFolderId && Reflect.has(notes, activeFolderId)) {
+      return notes[activeFolderId].find((note) => note.id === activeNoteId);
+    }
+
+    return [];
+  }, [notes, activeNoteId, activeFolderId]);
 
   return (
     <div className={"Note theme " + activeTheme}>
@@ -54,13 +44,7 @@ function Notes() {
           ? "Saving..."
           : (isSaved === 2 && "Storage Exceeded") || ""}
       </div>
-      <Tabs
-        tabs={notes}
-        activeTabId={activeNoteId}
-        onAddTab={handleAddTab}
-        onTabClick={handleTabChange}
-        onTabClose={handleTabClose}
-      />
+      <Tabs />
       <TabContent
         key={activeNoteId}
         activeTabId={activeNoteId}

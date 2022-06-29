@@ -1,39 +1,53 @@
 import "./TabContent.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
+import NotesContext from "../../context/notesContext";
 
-function TabContent({
-  activeTabId,
-  notesTitle,
-  notesContent,
-  onNotesDataChange,
-}) {
+function TabContent() {
+  const { notes, activeNoteId, activeFolderId, updateNotes } =
+    useContext(NotesContext);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
+  const activeNoteData = useMemo(() => {
+    if (activeFolderId && Reflect.has(notes, activeFolderId)) {
+      return notes[activeFolderId].find((note) => note.id === activeNoteId);
+    }
+
+    return undefined;
+  }, [notes, activeNoteId, activeFolderId]);
+
   useEffect(() => {
-    if (notesTitle) {
-      setTitle(notesTitle);
+    if (activeNoteData) {
+      setTitle(activeNoteData.title);
+      setContent(activeNoteData.content);
     }
-    if (notesContent) {
-      setContent(notesContent);
-    }
-  }, [notesTitle, notesContent]);
+  }, [activeNoteData]);
 
   useEffect(() => {
     const timmer = setTimeout(() => {
-      onNotesDataChange({
-        title,
-        content,
-      });
+      handleNotesDataChange(title, content);
     }, 200);
 
     return () => clearTimeout(timmer);
     // eslint-disable-next-line
   }, [title, content]);
 
+  const handleNotesDataChange = (title, content) => {
+    if (activeNoteData) {
+      if (
+        activeNoteData.title === title &&
+        activeNoteData.content === content
+      ) {
+        return;
+      } else {
+        updateNotes(activeNoteId, title, content);
+      }
+    }
+  };
+
   return (
     <div className="tab-content__container">
-      {activeTabId ? (
+      {activeNoteId ? (
         <div style={{ height: "100%" }}>
           <div className="tab-content__title-container">
             <input
@@ -61,8 +75,12 @@ function TabContent({
             <label htmlFor="content">Add notes...</label>
           </div>
         </div>
-      ) : (
+      ) : activeFolderId ? (
         <div className="tab-content__no-tab flex-center">No Note Selected</div>
+      ) : (
+        <div className="tab-content__no-tab flex-center">
+          No Folder Selected
+        </div>
       )}
     </div>
   );

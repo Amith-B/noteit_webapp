@@ -19,7 +19,7 @@
 
 .sidepanel {
   height: 100%;
-  width: 50%;
+  width: 240px;
   background-color: var(--tab-theme-bg);
   box-shadow: var(--shadow);
   color: var(--text-color);
@@ -27,4 +27,43 @@
 
 .panel-item {
   padding: 7px 8px;
+}
+
+.folder-name {
+  background-color: var(--tab-inactive-bg);
+  border-radius: var(--outer-curve-size-half);
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.folder-add {
+  background-color: var(--tab-add-bg);
+  width: 50px;
+  height: 30px;
+  border-radius: var(--outer-curve-size-half);
+  font-size: 26px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.folder-close {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  transform: rotate(45deg);
+  padding: 0;
+  padding-bottom: 4px;
+  border-radius: 50%;
+  color: black;
+  font-weight: bold;
+}
+
+.folder-close:hover {
+  background-color: #0000002f;
 }
