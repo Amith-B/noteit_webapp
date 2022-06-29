@@ -25,31 +25,33 @@ function SidePanel({ open, onClose }) {
           </button>
         </div>
         <hr />
-        {notes &&
-          Object.keys(notes).map((folderId) => {
-            return (
-              <div className="panel-item" key={folderId}>
-                <div
-                  className={
-                    "folder-name clickable " +
-                    (activeFolderId === folderId ? "active" : "")
-                  }
-                  onClick={() => setActiveFolderId(folderId)}
-                >
-                  <div>{folderId.split("_")[0]}</div>
+        <div className="folder-list">
+          {notes &&
+            Object.keys(notes).map((folderId) => {
+              return (
+                <div className="panel-item" key={folderId}>
                   <div
-                    className="clickable folder-close flex-center"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      closeFolder(folderId);
-                    }}
+                    className={
+                      "folder-container " +
+                      (activeFolderId === folderId ? "active" : "clickable")
+                    }
+                    onClick={() => setActiveFolderId(folderId)}
                   >
-                    +
+                    <div className="folder-name">{folderId.split("_")[0]}</div>
+                    <div
+                      className="clickable folder-close flex-center"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        closeFolder(folderId);
+                      }}
+                    >
+                      +
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+        </div>
       </section>
     </div>
   );

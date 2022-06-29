@@ -108,6 +108,7 @@ export default function PuzzleProvider({ children }) {
   }, [activeNoteId]);
 
   useEffect(() => {
+    setActiveNoteId("");
     const timmer = setTimeout(() => {
       chrome &&
         chrome.storage &&
