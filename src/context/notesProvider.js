@@ -88,7 +88,6 @@ export default function PuzzleProvider({ children }) {
             setIsSaved(2);
           }
         });
-      console.log(notes);
       setIsSaved(1);
     }, 1000);
 
