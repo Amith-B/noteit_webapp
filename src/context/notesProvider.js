@@ -75,6 +75,18 @@ export default function PuzzleProvider({ children }) {
     }
   };
 
+  const renameFolder = (folderId, newName) => {
+    const data = { ...notes };
+    const folderData = data[folderId];
+    Reflect.deleteProperty(data, folderId);
+    const newFolderId = newName + "_" + new Date().getTime().toString();
+    data[newFolderId] = folderData;
+    if (activeFolderId === folderId) {
+      setActiveFolderId(newFolderId);
+    }
+    setNotes(data);
+  };
+
   useEffect(() => {
     setIsSaved(0);
     const timmer = setTimeout(() => {
@@ -177,6 +189,7 @@ export default function PuzzleProvider({ children }) {
         setIsSaved,
         addNote,
         addFolder,
+        renameFolder,
         closeTab,
         closeFolder,
         updateNotes,

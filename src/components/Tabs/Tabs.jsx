@@ -12,7 +12,7 @@ import verticalDot from "../../assets/vertical_dots.svg";
 import hamburger from "../../assets/hamburger.svg";
 import SidePanel from "../SidePanel/SidePanel";
 
-function Tabs({ onAddTab }) {
+function Tabs() {
   const {
     themes,
     activeTheme,

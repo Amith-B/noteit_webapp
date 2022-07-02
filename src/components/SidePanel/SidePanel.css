@@ -53,6 +53,10 @@
 
 .folder-name {
   font-size: 14px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .folder-add {
@@ -80,11 +84,36 @@
   transform: rotate(45deg);
   padding: 0;
   padding-bottom: 4px;
-  border-radius: 50%;
   color: black;
   font-weight: bold;
 }
 
-.folder-close:hover {
+.folder-close:hover,
+.folder-rename:hover {
+  border-radius: 50%;
   background-color: #0000002f;
+}
+
+.folder-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.folder-rename {
+  width: 16px;
+  height: 16px;
+}
+
+.folder-notes-count {
+  font-size: 10px;
+  background-color: var(--tab-theme-bg);
+  height: 16px;
+  min-width: 24px;
+  padding: 0 2px;
+  border-radius: 6px;
+}
+
+.folder-rename-input {
+  width: 100%;
 }
