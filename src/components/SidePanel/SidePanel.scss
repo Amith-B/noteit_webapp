@@ -1,28 +1,32 @@
 .sidepanel {
-  height: calc(100% - 40px);
-  margin-top: 40px;
+  height: 100%;
   width: 240px;
   background-color: var(--primary-bg);
   box-shadow: var(--shadow);
   color: var(--text-color);
   display: flex;
   flex-direction: column;
+  border-right: 1px solid var(--text-color);
 
-  &__overlay {
-    position: absolute;
+  &__container {
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 240px;
+    height: 500px;
     z-index: 20;
     opacity: 0;
     visibility: hidden;
     transform: translateX(-100%);
     transition: all 0.2s ease-in-out;
+    transition-delay: 0.2s;
+
     &.visible {
       opacity: 1;
       visibility: visible;
       transform: unset;
+      transition: all 0.2s ease-in-out;
+      transition-delay: 0;
     }
   }
 }
@@ -48,16 +52,18 @@
 
     &.active {
       background-color: var(--tab-theme-bg);
-      & .folder-notes-count {
-        background-color: var(--tab-inactive-bg);
-        color: black;
-      }
-      & .folder-name {
-        color: var(--text-color);
-      }
-      & .folder-rename,
-      & .folder-close {
-        filter: var(--icon-filter);
+      .folder {
+        &-notes-count {
+          background-color: var(--tab-inactive-bg);
+          color: black;
+        }
+        &-name {
+          color: var(--text-color);
+        }
+        &-rename,
+        &-close {
+          filter: var(--icon-filter);
+        }
       }
     }
   }
@@ -73,7 +79,7 @@
   &-add {
     background-color: var(--tab-add-bg);
     width: 50px;
-    height: 30px;
+    height: 26px;
     border-radius: var(--outer-curve-size-half);
     font-size: 26px;
   }
@@ -123,7 +129,8 @@
 .header {
   display: flex;
   justify-content: space-between;
-  & h3 {
-    font-size: 20px;
+  background-color: var(--tab-theme-bg);
+  h3 {
+    font-size: 18px;
   }
 }

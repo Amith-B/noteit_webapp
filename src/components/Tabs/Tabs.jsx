@@ -10,9 +10,10 @@ import React, {
 import NotesContext from "../../context/notesContext";
 import verticalDot from "../../assets/vertical_dots.svg";
 import hamburger from "../../assets/hamburger.svg";
+import arrowLeft from "../../assets/arrow-previous-left.svg";
 import SidePanel from "../SidePanel/SidePanel";
 
-function Tabs() {
+function Tabs({ onSidePanelToggle }) {
   const {
     themes,
     activeTheme,
@@ -29,6 +30,11 @@ function Tabs() {
   const [maxLimit, setMaxLimit] = useState(0);
   const [usedSpace, setUsedSpace] = useState(0);
   const tabGroup = useRef();
+
+  useEffect(() => {
+    onSidePanelToggle(panelOpen);
+    // eslint-disable-next-line
+  }, [panelOpen]);
 
   const handleHorizontalScroll = useCallback(
     (event) => {
@@ -82,9 +88,13 @@ function Tabs() {
     <section className="tab__container">
       <button
         className="clickable notes-panel__toggle flex-center"
-        onClick={() => setPanelOpen(true)}
+        onClick={() => setPanelOpen((toggle) => !toggle)}
       >
-        <img style={{ height: "16px" }} src={hamburger} alt="3-dot" />
+        <img
+          style={{ height: "16px" }}
+          src={panelOpen ? arrowLeft : hamburger}
+          alt="3-dot"
+        />
       </button>
       <div className="tab__controls">
         {" "}

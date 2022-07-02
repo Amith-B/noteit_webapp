@@ -24,7 +24,7 @@ function SidePanel({ open, onClose }) {
 
   return (
     <div
-      className={"sidepanel__overlay " + (open ? "visible" : "")}
+      className={"sidepanel__container " + (open ? "visible" : "")}
       onClick={onClose}
     >
       <section
@@ -40,7 +40,6 @@ function SidePanel({ open, onClose }) {
             +
           </button>
         </div>
-        <hr />
         <div className="folder-list">
           {notes &&
             Object.keys(notes).map((folderId) => {
