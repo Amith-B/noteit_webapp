@@ -1,4 +1,4 @@
-# This is a chrome extension to add notes which is created using React
+# This is a chrome extension to add notes, created using React
 
 ![Screenshot](./docs/images/notes.jpg)
 
