@@ -173,3 +173,13 @@
     }
   }
 }
+.export {
+  display: flex;
+  gap: 6px;
+
+  &-button {
+    border-radius: 6px;
+    background-color: var(--tab-theme-bg);
+    color: var(--text-color);
+  }
+}

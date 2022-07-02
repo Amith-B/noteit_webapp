@@ -12,6 +12,7 @@ import verticalDot from "../../assets/vertical_dots.svg";
 import hamburger from "../../assets/hamburger.svg";
 import arrowLeft from "../../assets/arrow-previous-left.svg";
 import SidePanel from "../SidePanel/SidePanel";
+import { downloadXLSX, downloadJSON } from "../../utils/downloadNotes";
 
 function Tabs({ onSidePanelToggle }) {
   const {
@@ -82,6 +83,14 @@ function Tabs({ onSidePanelToggle }) {
     if (activeTab) {
       activeTab.scrollIntoView();
     }
+  };
+
+  const handleDownloadXlsx = () => {
+    downloadXLSX(notes);
+  };
+
+  const handleDownloadJson = () => {
+    downloadJSON(notes);
   };
 
   return (
@@ -178,6 +187,26 @@ function Tabs({ onSidePanelToggle }) {
               value={usedSpace}
             ></progress>
           </span>
+          <hr />
+          <h4>Export As</h4>
+          <hr />
+          <div className="notes-menu-item export">
+            <button
+              className="export-button clickable"
+              onClick={handleDownloadXlsx}
+            >
+              .xlsx
+            </button>
+            <button
+              className="export-button clickable"
+              onClick={handleDownloadJson}
+            >
+              .json
+            </button>
+            <a id="downloadAnchorElem" style={{ display: "none" }} href="/#">
+              Download
+            </a>
+          </div>
         </div>
       </div>
       <SidePanel open={panelOpen} onClose={() => setPanelOpen(false)} />
