@@ -5,7 +5,8 @@ import Tabs from "../Tabs/Tabs";
 import NotesContext from "../../context/notesContext";
 
 function Notes() {
-  const { activeTheme, isSaved, activeNoteId } = useContext(NotesContext);
+  const { activeTheme, isSaved, activeNoteId, activeFolderId } =
+    useContext(NotesContext);
 
   return (
     <div className={"Note theme " + activeTheme}>
@@ -16,7 +17,7 @@ function Notes() {
           ? "Saving..."
           : (isSaved === 2 && "Storage Exceeded") || ""}
       </div>
-      <Tabs />
+      <Tabs key={activeFolderId} />
       <TabContent key={activeNoteId} />
     </div>
   );

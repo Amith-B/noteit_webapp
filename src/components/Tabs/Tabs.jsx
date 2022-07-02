@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useState,
   useContext,
+  useMemo,
 } from "react";
 import NotesContext from "../../context/notesContext";
 import verticalDot from "../../assets/vertical_dots.svg";
@@ -18,9 +19,9 @@ function Tabs() {
     activeTheme,
     setActiveTheme,
     notes,
-    activeNoteId,
     activeFolderId,
     closeTab,
+    activeNoteId,
     setActiveNoteId,
     addNote,
   } = useContext(NotesContext);
@@ -67,12 +68,16 @@ function Tabs() {
   }, []);
 
   useEffect(() => {
+    handleScroll();
+  }, [activeFolderId, activeNoteId]);
+
+  const handleScroll = () => {
     const activeTab = document.querySelector(".tab.active");
 
     if (activeTab) {
       activeTab.scrollIntoView();
     }
-  }, [activeNoteId, activeFolderId]);
+  };
 
   return (
     <section className="tab__container">
@@ -86,15 +91,19 @@ function Tabs() {
         {" "}
         <div className="tab-group hide-scrollbar" ref={tabGroup}>
           {activeFolderId &&
-            notes[activeFolderId] &&
-            notes[activeFolderId].map((note) => (
+            notes[activeFolderId]?.list?.map((note) => (
               <button
                 className={
-                  "tab " + (activeNoteId === note.id ? "active" : "clickable")
+                  "tab " +
+                  (notes[activeFolderId].activeNoteId === note.id
+                    ? "active"
+                    : "clickable")
                 }
                 key={note.id}
-                onClick={() => setActiveNoteId(note.id)}
-                tabIndex={activeNoteId === note.id ? "-1" : "0"}
+                onClick={() => setActiveNoteId(activeFolderId, note.id)}
+                tabIndex={
+                  notes[activeFolderId].activeNoteId === note.id ? "-1" : "0"
+                }
               >
                 <div className="tab-title" title={note.title}>
                   {note.title}
@@ -103,7 +112,7 @@ function Tabs() {
                   className="clickable tab-close flex-center"
                   onClick={(event) => {
                     event.stopPropagation();
-                    closeTab(note.id);
+                    closeTab(activeFolderId, note.id);
                   }}
                 >
                   +

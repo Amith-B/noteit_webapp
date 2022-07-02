@@ -1,11 +1,10 @@
 /*global chrome*/
 import NotesContext from "./notesContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import initialData from "./initialData";
 
 export default function PuzzleProvider({ children }) {
   const [notes, setNotes] = useState(initialData.notes);
-  const [activeNoteId, setActiveNoteId] = useState(initialData.activeNoteId);
   const [activeFolderId, setActiveFolderId] = useState(
     initialData.activeFolderId
   );
@@ -13,37 +12,47 @@ export default function PuzzleProvider({ children }) {
   const [activeTheme, setActiveTheme] = useState(initialData.activeTheme);
   const [isSaved, setIsSaved] = useState(0); // 0 - not saved, 1 - saved, 2 - error
 
+  const setActiveNoteId = (folderId, activeNodeId) => {
+    const data = { ...notes };
+    data[folderId].activeNoteId = activeNodeId;
+    setNotes(data);
+  };
+
   const addNote = () => {
     const data = { ...notes };
-    const newNoteId = new Date().getTime().toString();
+    const newNoteId = "note_" + new Date().getTime().toString();
     if (activeFolderId && Reflect.has(data, activeFolderId)) {
-      data[activeFolderId].push({
+      data[activeFolderId].list.push({
         id: newNoteId,
         title: "New Note",
         content: "",
       });
-      setActiveNoteId(newNoteId);
+      setActiveNoteId(activeFolderId, newNoteId);
       setNotes(data);
     }
   };
 
   const addFolder = () => {
     const data = { ...notes };
-    const newFolderId = "newFolder_" + new Date().getTime().toString();
-    data[newFolderId] = [];
+    const newFolderId = "folder_" + new Date().getTime().toString();
+    data[newFolderId] = {
+      folderName: "New Folder",
+      activeNoteId: "",
+      list: [],
+    };
     setNotes(data);
     setActiveFolderId(newFolderId);
   };
 
-  const closeTab = (noteId) => {
-    if (activeFolderId && Reflect.has(notes, activeFolderId)) {
+  const closeTab = (folderId, noteId) => {
+    if (Reflect.has(notes, folderId)) {
       const data = { ...notes };
-      data[activeFolderId] = data[activeFolderId].filter(
+      data[folderId].list = data[folderId].list.filter(
         (note) => note.id !== noteId
       );
       setNotes(data);
-      if (activeNoteId === noteId) {
-        setActiveNoteId("");
+      if (data[folderId].activeNoteId === noteId) {
+        setActiveNoteId(folderId, "");
       }
     }
   };
@@ -57,10 +66,10 @@ export default function PuzzleProvider({ children }) {
     }
   };
 
-  const updateNotes = (noteId, title, content) => {
-    if (activeFolderId && Reflect.has(notes, activeFolderId)) {
+  const updateNotes = (folderId, noteId, title, content) => {
+    if (Reflect.has(notes, folderId)) {
       const data = { ...notes };
-      data[activeFolderId] = data[activeFolderId].map((note) => {
+      data[folderId].list = data[folderId].list.map((note) => {
         if (note.id === noteId) {
           return {
             id: noteId,
@@ -78,14 +87,14 @@ export default function PuzzleProvider({ children }) {
   const renameFolder = (folderId, newName) => {
     const data = { ...notes };
     const folderData = data[folderId];
-    Reflect.deleteProperty(data, folderId);
-    const newFolderId = newName + "_" + new Date().getTime().toString();
-    data[newFolderId] = folderData;
-    if (activeFolderId === folderId) {
-      setActiveFolderId(newFolderId);
-    }
+    folderData.folderName = newName;
     setNotes(data);
   };
+
+  const activeNoteId = useMemo(
+    () => notes[activeFolderId]?.activeNoteId,
+    [notes, activeFolderId]
+  );
 
   useEffect(() => {
     setIsSaved(0);
@@ -107,19 +116,6 @@ export default function PuzzleProvider({ children }) {
   }, [notes]);
 
   useEffect(() => {
-    const timmer = setTimeout(() => {
-      chrome &&
-        chrome.storage &&
-        chrome.storage.local.set({ activeNoteId: activeNoteId }, function () {
-          console.log("Active Note Changed");
-        });
-    }, 100);
-
-    return () => clearTimeout(timmer);
-  }, [activeNoteId]);
-
-  useEffect(() => {
-    setActiveNoteId("");
     const timmer = setTimeout(() => {
       chrome &&
         chrome.storage &&
@@ -158,11 +154,6 @@ export default function PuzzleProvider({ children }) {
       chrome.storage.local.get(["activeTheme"], function (result) {
         if (result.activeTheme) {
           setActiveTheme(result.activeTheme);
-        }
-      });
-      chrome.storage.local.get(["activeNoteId"], function (result) {
-        if (result.activeNoteId) {
-          setActiveNoteId(result.activeNoteId);
         }
       });
       chrome.storage.local.get(["activeFolderId"], function (result) {

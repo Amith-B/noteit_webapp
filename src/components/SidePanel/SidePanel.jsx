@@ -17,7 +17,6 @@ function SidePanel({ open, onClose }) {
   const [renameValue, setRenameValue] = useState("");
 
   const handleRename = () => {
-    console.log("rename", renameId, renameValue);
     renameFolder(renameId, renameValue);
     setRenameId("");
     setRenameValue("");
@@ -74,18 +73,18 @@ function SidePanel({ open, onClose }) {
                           }}
                         />
                       ) : (
-                        folderId.split("_")[0]
+                        notes[folderId].folderName
                       )}
                     </div>
                     <div className="folder-controls">
                       <div className="folder-notes-count flex-center">
-                        {notes[folderId].length}
+                        {notes[folderId].list.length}
                       </div>
                       <div
                         className="clickable folder-rename flex-center"
                         onClick={(event) => {
                           event.stopPropagation();
-                          setRenameValue(folderId.split("_")[0]);
+                          setRenameValue(notes[folderId].folderName);
                           setRenameId(folderId);
                         }}
                       >

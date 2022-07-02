@@ -3,18 +3,19 @@ import React, { useState, useEffect, useContext, useMemo } from "react";
 import NotesContext from "../../context/notesContext";
 
 function TabContent() {
-  const { notes, activeNoteId, activeFolderId, updateNotes } =
-    useContext(NotesContext);
+  const { notes, activeFolderId, updateNotes } = useContext(NotesContext);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
   const activeNoteData = useMemo(() => {
     if (activeFolderId && Reflect.has(notes, activeFolderId)) {
-      return notes[activeFolderId].find((note) => note.id === activeNoteId);
+      return notes[activeFolderId].list.find(
+        (note) => note.id === notes[activeFolderId].activeNoteId
+      );
     }
 
     return undefined;
-  }, [notes, activeNoteId, activeFolderId]);
+  }, [notes, activeFolderId]);
 
   useEffect(() => {
     if (activeNoteData) {
@@ -40,14 +41,19 @@ function TabContent() {
       ) {
         return;
       } else {
-        updateNotes(activeNoteId, title, content);
+        updateNotes(
+          activeFolderId,
+          notes[activeFolderId].activeNoteId,
+          title,
+          content
+        );
       }
     }
   };
 
   return (
     <div className="tab-content__container">
-      {activeNoteId ? (
+      {activeFolderId && notes[activeFolderId]?.activeNoteId ? (
         <div style={{ height: "100%" }}>
           <div className="tab-content__title-container">
             <input
