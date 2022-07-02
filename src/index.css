@@ -2,6 +2,7 @@
   --outer-curve-size: 20px;
   --outer-curve-size-half: calc(var(--outer-curve-size) / 2);
   --shadow: 0px 2px 12px -4px #181616a3;
+  --shadow-inset: inset 0px 2px 8px -4px #181616a3;
 }
 
 .theme.default {
