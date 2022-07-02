@@ -1,4 +1,4 @@
-import "./SidePanel.css";
+import "./SidePanel.scss";
 import React, { useContext, useState } from "react";
 import NotesContext from "../../context/notesContext";
 import edit from "../../assets/edit.svg";

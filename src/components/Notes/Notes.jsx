@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import "./Notes.css";
+import "./Notes.scss";
 import TabContent from "../TabContent/TabContent";
 import Tabs from "../Tabs/Tabs";
 import NotesContext from "../../context/notesContext";

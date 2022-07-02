@@ -1,4 +1,4 @@
-import "./TabContent.css";
+import "./TabContent.scss";
 import React, { useState, useEffect, useContext, useMemo } from "react";
 import NotesContext from "../../context/notesContext";
 

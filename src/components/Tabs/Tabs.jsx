@@ -1,5 +1,5 @@
 /*global chrome*/
-import "./Tabs.css";
+import "./Tabs.scss";
 import React, {
   useRef,
   useEffect,
