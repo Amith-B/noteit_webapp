@@ -72,6 +72,7 @@ function TabContent() {
           <div className="tab-content">
             <textarea
               id="content"
+              autoFocus
               className={"tab-content-input " + (!content ? "empty" : "")}
               value={content}
               onChange={(event) => {
