@@ -108,6 +108,10 @@ export default function PuzzleProvider({ children }) {
             console.log("Storage Exceeded");
             setIsSaved(2);
           }
+
+          if (!Object.keys(notes).length) {
+            setActiveFolderId("");
+          }
         });
       setIsSaved(1);
     }, 1000);
