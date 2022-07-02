@@ -52,7 +52,10 @@ function SidePanel({ open, onClose }) {
                     }
                     onClick={() => setActiveFolderId(folderId)}
                   >
-                    <div className="folder-name">
+                    <div
+                      className="folder-name"
+                      title={notes[folderId].folderName}
+                    >
                       {renameId === folderId ? (
                         <input
                           className="folder-rename-input"
