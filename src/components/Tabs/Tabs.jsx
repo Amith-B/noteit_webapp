@@ -6,7 +6,6 @@ import React, {
   useCallback,
   useState,
   useContext,
-  useMemo,
 } from "react";
 import NotesContext from "../../context/notesContext";
 import verticalDot from "../../assets/vertical_dots.svg";
