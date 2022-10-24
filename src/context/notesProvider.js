@@ -3,7 +3,7 @@ import NotesContext from "./notesContext";
 import { useState, useEffect, useMemo } from "react";
 import initialData from "./initialData";
 
-export default function PuzzleProvider({ children }) {
+export default function NotesProvider({ children }) {
   const [notes, setNotes] = useState(initialData.notes);
   const [activeFolderId, setActiveFolderId] = useState(
     initialData.activeFolderId
