@@ -1,18 +1,20 @@
 /*global chrome*/
 import "./Tabs.scss";
+
 import React, {
-  useRef,
-  useEffect,
   useCallback,
-  useState,
   useContext,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
+import { downloadJSON, downloadXLSX } from "../../utils/downloadNotes";
+
 import NotesContext from "../../context/notesContext";
-import verticalDot from "../../assets/vertical_dots.svg";
-import hamburger from "../../assets/hamburger.svg";
-import arrowLeft from "../../assets/arrow-previous-left.svg";
 import SidePanel from "../SidePanel/SidePanel";
-import { downloadXLSX, downloadJSON } from "../../utils/downloadNotes";
+import arrowLeft from "../../assets/arrow-previous-left.svg";
+import hamburger from "../../assets/hamburger.svg";
+import verticalDot from "../../assets/vertical_dots.svg";
 
 function Tabs({ onSidePanelToggle }) {
   const {
@@ -25,6 +27,7 @@ function Tabs({ onSidePanelToggle }) {
     activeNoteId,
     setActiveNoteId,
     addNote,
+    setNotes,
   } = useContext(NotesContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -91,6 +94,19 @@ function Tabs({ onSidePanelToggle }) {
 
   const handleDownloadJson = () => {
     downloadJSON(notes);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = handleFileRead;
+    reader.readAsText(file);
+  };
+
+  const handleFileRead = (e) => {
+    const content = e.target.result;
+    const jsonData = JSON.parse(content);
+    setNotes(jsonData);
   };
 
   return (
@@ -190,15 +206,15 @@ function Tabs({ onSidePanelToggle }) {
           <hr />
           <h4>Export As</h4>
           <hr />
-          <div className="notes-menu-item export">
+          <div className="notes-menu-item export-import">
             <button
-              className="export-button clickable"
+              className="export-import-button clickable"
               onClick={handleDownloadXlsx}
             >
               .xlsx
             </button>
             <button
-              className="export-button clickable"
+              className="export-import-button clickable"
               onClick={handleDownloadJson}
             >
               .json
@@ -206,6 +222,17 @@ function Tabs({ onSidePanelToggle }) {
             <a id="downloadAnchorElem" style={{ display: "none" }} href="/#">
               Download
             </a>
+          </div>
+          <hr />
+          <h4>
+            Import From{" "}
+            <span style={{ padding: "0 6px" }} className="export-import-button">
+              .json
+            </span>
+          </h4>
+          <hr />
+          <div className="notes-menu-item export-import">
+            <input type="file" accept=".json" onChange={handleFileChange} />
           </div>
         </div>
       </div>
