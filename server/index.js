@@ -1,11 +1,13 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const app = express();
 
 require("dotenv").config();
 
 const port = process.env.PORT;
+const mongodbUrl = process.env.MONGODB_URL;
 
 // Require subroute files
 const signInRoutes = require("./routes/signin");
@@ -58,7 +60,18 @@ app.use(tokenVerificationMiddleware);
 app.use("/api/signin", signInRoutes);
 app.use("/api/notes", notesRoutes);
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// Connect to MongoDB using Mongoose
+mongoose
+  .connect(mongodbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("Connected to MongoDB");
+
+    // Start the server
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+    process.exit(1); // Exit the application
+  });
