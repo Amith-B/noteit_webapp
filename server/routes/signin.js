@@ -3,8 +3,7 @@ const router = express.Router();
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
 
-const TOKEN_SECRET = "SOME_SECRET_KEY";
-const googleApiUrl = "https://oauth2.googleapis.com/tokeninfo?id_token=";
+const googleApiUrl = process.env.GOOGLE_API_URL;
 
 router.get("/", (req, res) => {
   const authToken = res.locals.token;
@@ -15,8 +14,11 @@ router.get("/", (req, res) => {
       const payload = {
         email,
         name,
+        // uid: mongodb uid - TODO
       };
-      const jwtToken = jwt.sign(payload, TOKEN_SECRET, { expiresIn: "2s" });
+      const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+        expiresIn: "7d",
+      });
 
       res.send(JSON.stringify({ token: jwtToken, ...payload }));
     })

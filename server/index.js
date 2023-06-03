@@ -3,8 +3,9 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const app = express();
 
-const port = 3001;
-const TOKEN_SECRET = "SOME_SECRET_KEY";
+require("dotenv").config();
+
+const port = process.env.PORT;
 
 // Require subroute files
 const signInRoutes = require("./routes/signin");
@@ -32,7 +33,7 @@ const tokenVerificationMiddleware = (req, res, next) => {
     next();
   } else {
     try {
-      jwt.verify(authToken, TOKEN_SECRET);
+      jwt.verify(authToken, process.env.TOKEN_SECRET);
       next();
     } catch (e) {
       if (e.name === jwt.JsonWebTokenError.name) {
@@ -59,5 +60,5 @@ app.use("/api/notes", notesRoutes);
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running on port ${process.env.PORT || port}`);
+  console.log(`Server is running on port ${port}`);
 });
