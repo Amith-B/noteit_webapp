@@ -13,6 +13,23 @@ router.get("/", async (req, res) => {
   res.send(JSON.stringify(user.folderIds));
 });
 
+router.get("/:folderId/notes", async (req, res) => {
+  const { _id: userId } = res.locals.tokenData;
+  const { folderId } = req.params;
+
+  if (!folderId) {
+    res.status(400).json({ message: "Bad Request, folder id required" });
+    return;
+  }
+
+  const notesList = await Folder.findOne({ _id: folderId, userId }).populate(
+    "noteIds",
+    "title _id"
+  );
+
+  res.send(JSON.stringify(notesList.noteIds));
+});
+
 router.post("/", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
   const { folderName } = req.body;

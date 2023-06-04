@@ -6,6 +6,10 @@ const noteSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Folder",
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   title: String,
 });
 
