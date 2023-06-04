@@ -70,7 +70,7 @@ router.delete("/:folderId", async (req, res) => {
 
 router.patch("/:folderId", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
-  const { newFolderName } = req.body;
+  const { folderName } = req.body;
   const { folderId } = req.params;
 
   if (!folderId) {
@@ -78,7 +78,7 @@ router.patch("/:folderId", async (req, res) => {
     return;
   }
 
-  if (!newFolderName) {
+  if (!folderName) {
     res.status(400).json({ message: "Bad Request, new folder name required" });
     return;
   }
@@ -87,7 +87,7 @@ router.patch("/:folderId", async (req, res) => {
     const updatedFolder = await Folder.findOneAndUpdate(
       { _id: folderId, userId },
       {
-        $set: { folderName: newFolderName },
+        $set: { folderName },
       },
       { new: true }
     );
