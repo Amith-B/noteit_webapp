@@ -2,16 +2,18 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 const app = express();
 
 require("dotenv").config();
 
-const port = process.env.PORT;
+const port = process.env.NODE_PORT;
 const mongodbUrl = process.env.MONGODB_URL;
 
 // Require subroute files
 const signInRoutes = require("./routes/signin");
 const notesRoutes = require("./routes/notes");
+const folderRoutes = require("./routes/folder");
 
 // Middleware function
 const tokenVerificationMiddleware = (req, res, next) => {
@@ -52,6 +54,9 @@ const tokenVerificationMiddleware = (req, res, next) => {
 // cors
 app.use(cors());
 
+// body parser
+app.use(bodyParser.json());
+
 // Use the middleware
 app.use(tokenVerificationMiddleware);
 
@@ -59,6 +64,7 @@ app.use(tokenVerificationMiddleware);
 // app.use('/', homeRoutes);
 app.use("/api/signin", signInRoutes);
 app.use("/api/notes", notesRoutes);
+app.use("/api/folder", folderRoutes);
 
 // Connect to MongoDB using Mongoose
 mongoose

@@ -27,9 +27,18 @@ router.get("/", (req, res) => {
         payload = (await newUser.save()).toJSON();
       }
 
-      const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
-        expiresIn: "7d",
-      });
+      const jwtToken = jwt.sign(
+        {
+          email: payload.email,
+          name: payload.name,
+          picture: payload.picture,
+          _id: payload._id,
+        },
+        process.env.TOKEN_SECRET,
+        {
+          expiresIn: "7d",
+        }
+      );
 
       res.send(JSON.stringify({ token: jwtToken, ...payload }));
     })
