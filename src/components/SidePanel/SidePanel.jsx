@@ -1,14 +1,16 @@
 import "./SidePanel.scss";
+
 import React, { useContext, useState } from "react";
+
 import NotesContext from "../../context/notesContext";
 import edit from "../../assets/edit.svg";
 
 function SidePanel({ open, onClose }) {
   const {
-    notes,
-    activeFolderId,
+    folders,
+    activeFolder,
     addFolder,
-    setActiveFolderId,
+    updateActiveFolder,
     closeFolder,
     renameFolder,
   } = useContext(NotesContext);
@@ -41,75 +43,65 @@ function SidePanel({ open, onClose }) {
           </button>
         </div>
         <div className="folder-list">
-          {notes &&
-            Object.keys(notes).map((folderId) => {
-              return (
-                <div className="panel-item" key={folderId}>
-                  <div
-                    className={
-                      "folder-container " +
-                      (activeFolderId === folderId ? "active" : "clickable")
-                    }
-                    onClick={() => setActiveFolderId(folderId)}
-                  >
-                    <div
-                      className="folder-name"
-                      title={notes[folderId].folderName}
-                    >
-                      {renameId === folderId ? (
-                        <input
-                          className="folder-rename-input"
-                          autoFocus
-                          value={renameValue}
-                          onChange={(event) =>
-                            setRenameValue(event.target.value)
+          {folders.map((folder) => {
+            return (
+              <div className="panel-item" key={folder._id}>
+                <div
+                  className={
+                    "folder-container " +
+                    (activeFolder?._id === folder._id ? "active" : "clickable")
+                  }
+                  onClick={() => updateActiveFolder(folder)}
+                >
+                  <div className="folder-name" title={folder.folderName}>
+                    {renameId === folder._id ? (
+                      <input
+                        className="folder-rename-input"
+                        autoFocus
+                        value={renameValue}
+                        onChange={(event) => setRenameValue(event.target.value)}
+                        type={"text"}
+                        min={1}
+                        max={20}
+                        onBlur={handleRename}
+                        onKeyPress={(event) => {
+                          if (event.key === "Enter") {
+                            handleRename();
                           }
-                          type={"text"}
-                          min={1}
-                          max={20}
-                          onBlur={handleRename}
-                          onKeyPress={(event) => {
-                            if (event.key === "Enter") {
-                              handleRename();
-                            }
-                          }}
-                        />
-                      ) : (
-                        notes[folderId].folderName
-                      )}
+                        }}
+                      />
+                    ) : (
+                      folder.folderName
+                    )}
+                  </div>
+                  <div className="folder-controls">
+                    <div className="folder-notes-count flex-center">
+                      {folder.noteIds.length}
                     </div>
-                    <div className="folder-controls">
-                      <div className="folder-notes-count flex-center">
-                        {notes[folderId].list.length}
-                      </div>
-                      <div
-                        className="clickable folder-rename flex-center"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setRenameValue(notes[folderId].folderName);
-                          setRenameId(folderId);
-                        }}
-                      >
-                        <img
-                          style={{ height: "12px" }}
-                          src={edit}
-                          alt="rename"
-                        />
-                      </div>
-                      <div
-                        className="clickable folder-close flex-center"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          closeFolder(folderId);
-                        }}
-                      >
-                        +
-                      </div>
+                    <div
+                      className="clickable folder-rename flex-center"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setRenameValue(folder.folderName);
+                        setRenameId(folder._id);
+                      }}
+                    >
+                      <img style={{ height: "12px" }} src={edit} alt="rename" />
+                    </div>
+                    <div
+                      className="clickable folder-close flex-center"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        closeFolder(folder._id);
+                      }}
+                    >
+                      +
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>

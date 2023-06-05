@@ -21,13 +21,13 @@ function Tabs({ onSidePanelToggle }) {
     themes,
     activeTheme,
     setActiveTheme,
-    notes,
-    activeFolderId,
+    folders,
+    activeFolder,
     closeTab,
     activeNoteId,
     setActiveNoteId,
     addNote,
-    setNotes,
+    setFolders,
   } = useContext(NotesContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -57,20 +57,20 @@ function Tabs({ onSidePanelToggle }) {
     [tabGroup]
   );
 
-  useEffect(() => {
-    if (chrome.storage && chrome.storage.local) {
-      chrome.storage.local.getBytesInUse().then((value) => {
-        setUsedSpace(value);
-      });
-    }
-  }, [notes]);
+  // useEffect(() => {
+  //   if (chrome.storage && chrome.storage.local) {
+  //     chrome.storage.local.getBytesInUse().then((value) => {
+  //       setUsedSpace(value);
+  //     });
+  //   }
+  // }, [folders]);
 
   useEffect(() => {
     const tabRef = tabGroup.current;
     tabRef.addEventListener("wheel", handleHorizontalScroll);
-    if (chrome.storage && chrome.storage.local) {
-      setMaxLimit(chrome.storage.local.QUOTA_BYTES);
-    }
+    // if (chrome.storage && chrome.storage.local) {
+    //   setMaxLimit(chrome.storage.local.QUOTA_BYTES);
+    // }
 
     return () => tabRef.removeEventListener("wheel", handleHorizontalScroll);
     // eslint-disable-next-line
@@ -78,7 +78,7 @@ function Tabs({ onSidePanelToggle }) {
 
   useEffect(() => {
     handleScroll();
-  }, [activeFolderId, activeNoteId]);
+  }, [activeFolder, activeNoteId]);
 
   const handleScroll = () => {
     const activeTab = document.querySelector(".tab.active");
@@ -89,11 +89,11 @@ function Tabs({ onSidePanelToggle }) {
   };
 
   const handleDownloadXlsx = () => {
-    downloadXLSX(notes);
+    downloadXLSX(folders);
   };
 
   const handleDownloadJson = () => {
-    downloadJSON(notes);
+    downloadJSON(folders);
   };
 
   const handleFileChange = (e) => {
@@ -106,7 +106,7 @@ function Tabs({ onSidePanelToggle }) {
   const handleFileRead = (e) => {
     const content = e.target.result;
     const jsonData = JSON.parse(content);
-    setNotes(jsonData);
+    setFolders(jsonData);
   };
 
   return (
@@ -124,19 +124,19 @@ function Tabs({ onSidePanelToggle }) {
       <div className="tab__controls">
         {" "}
         <div className="tab-group hide-scrollbar" ref={tabGroup}>
-          {activeFolderId &&
-            notes[activeFolderId]?.list?.map((note) => (
+          {activeFolder &&
+            activeFolder?.noteIds?.map((note) => (
               <button
                 className={
                   "tab " +
-                  (notes[activeFolderId].activeNoteId === note.id
+                  (activeFolder?.activeNoteId === note._id
                     ? "active"
                     : "clickable")
                 }
-                key={note.id}
-                onClick={() => setActiveNoteId(activeFolderId, note.id)}
+                key={note._id}
+                onClick={() => setActiveNoteId(activeFolder, note._id)}
                 tabIndex={
-                  notes[activeFolderId].activeNoteId === note.id ? "-1" : "0"
+                  activeFolder?.activeNoteId === note._id ? "-1" : "0"
                 }
               >
                 <div className="tab-title" title={note.title}>
@@ -146,7 +146,7 @@ function Tabs({ onSidePanelToggle }) {
                   className="clickable tab-close flex-center"
                   onClick={(event) => {
                     event.stopPropagation();
-                    closeTab(activeFolderId, note.id);
+                    closeTab(activeFolder, note._id);
                   }}
                 >
                   +
@@ -154,7 +154,7 @@ function Tabs({ onSidePanelToggle }) {
               </button>
             ))}
         </div>
-        {activeFolderId && (
+        {activeFolder && (
           <button className="clickable tab-add flex-center" onClick={addNote}>
             +
           </button>

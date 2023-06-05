@@ -37,7 +37,7 @@ function App() {
       callback: handleSignin,
     });
 
-    handleSignin({ credential: dummyToken });
+    // handleSignin({ credential: dummyToken });
   }, []);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ function App() {
   return (
     <div className="App">
       <NotesProvider>
-        {user ? <Notes /> : <div className="sign-in" ref={signInButton}></div>}
+        {!user ? <Notes /> : <div className="sign-in" ref={signInButton}></div>}
       </NotesProvider>
     </div>
   );

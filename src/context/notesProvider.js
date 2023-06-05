@@ -1,74 +1,98 @@
+import { useEffect, useMemo, useState } from "react";
+
 /*global chrome*/
 import NotesContext from "./notesContext";
-import { useState, useEffect, useMemo } from "react";
+import axios from "axios";
+import { getUrl } from "../utils/api";
 import initialData from "./initialData";
 
 export default function NotesProvider({ children }) {
-  const [notes, setNotes] = useState(initialData.notes);
-  const [activeFolderId, setActiveFolderId] = useState(
-    initialData.activeFolderId
-  );
+  const [folders, setFolders] = useState(initialData.folders);
+  const [activeFolder, setActiveFolder] = useState(initialData.activeFolder);
   const themes = initialData.themes;
   const [activeTheme, setActiveTheme] = useState(initialData.activeTheme);
   const [isSaved, setIsSaved] = useState(0); // 0 - not saved, 1 - saved, 2 - error
 
   const setActiveNoteId = (folderId, activeNodeId) => {
-    const data = { ...notes };
+    const data = { ...folders };
     data[folderId].activeNoteId = activeNodeId;
-    setNotes(data);
+    setFolders(data);
   };
 
   const addNote = () => {
-    const data = { ...notes };
+    const data = { ...folders };
     const newNoteId = "note_" + new Date().getTime().toString();
-    if (activeFolderId && Reflect.has(data, activeFolderId)) {
-      data[activeFolderId].list.push({
+    if (activeFolder) {
+      activeFolder.noteIds.push({
         id: newNoteId,
         title: "New Note",
         content: "",
       });
-      setActiveNoteId(activeFolderId, newNoteId);
-      setNotes(data);
+      setActiveNoteId(activeFolder, newNoteId);
+      setFolders(data);
     }
   };
 
-  const addFolder = () => {
-    const data = { ...notes };
-    const newFolderId = "folder_" + new Date().getTime().toString();
-    data[newFolderId] = {
+  const addFolder = async () => {
+    // const data = { ...folders };
+    // const newFolderId = "folder_" + new Date().getTime().toString();
+    // data[newFolderId] = {
+    //   folderName: "New Folder",
+    //   activeNoteId: "",
+    //   list: [],
+    // };
+    // setFolders(data);
+    // setActiveFolder(newFolderId);
+
+    const newFolder = await axios.post(getUrl("folder"), {
       folderName: "New Folder",
-      activeNoteId: "",
-      list: [],
-    };
-    setNotes(data);
-    setActiveFolderId(newFolderId);
+    });
+
+    setFolders(folders.concat(newFolder.data));
+  };
+
+  const updateActiveFolder = async (folder) => {
+    const activeFolderNotes = (
+      await axios.get(getUrl(`folder/${folder._id}/notes`))
+    ).data;
+
+    setActiveFolder({
+      ...folder,
+      noteIds: activeFolderNotes,
+    });
   };
 
   const closeTab = (folderId, noteId) => {
-    if (Reflect.has(notes, folderId)) {
-      const data = { ...notes };
+    if (Reflect.has(folders, folderId)) {
+      const data = { ...folders };
       data[folderId].list = data[folderId].list.filter(
         (note) => note.id !== noteId
       );
-      setNotes(data);
+      setFolders(data);
       if (data[folderId].activeNoteId === noteId) {
         setActiveNoteId(folderId, "");
       }
     }
   };
 
-  const closeFolder = (folderId) => {
-    const data = { ...notes };
-    Reflect.deleteProperty(data, folderId);
-    setNotes(data);
-    if (folderId === activeFolderId) {
-      setActiveFolderId("");
-    }
+  const closeFolder = async (folderId) => {
+    // setFolders(folders);
+    // if (folderId === activeFolder._id) {
+    //   setActiveFolder(null);
+    // }
+
+    const deletedFolder = (await axios.delete(getUrl(`folder/${folderId}`)))
+      .data;
+    const filteredFolders = folders.filter(
+      (folder) => folder._id !== deletedFolder._id
+    );
+
+    setFolders(filteredFolders);
   };
 
   const updateNotes = (folderId, noteId, title, content) => {
-    if (Reflect.has(notes, folderId)) {
-      const data = { ...notes };
+    if (Reflect.has(folders, folderId)) {
+      const data = { ...folders };
       data[folderId].list = data[folderId].list.map((note) => {
         if (note.id === noteId) {
           return {
@@ -80,103 +104,131 @@ export default function NotesProvider({ children }) {
 
         return note;
       });
-      setNotes(data);
+      setFolders(data);
     }
   };
 
-  const renameFolder = (folderId, newName) => {
-    const data = { ...notes };
-    const folderData = data[folderId];
-    folderData.folderName = newName;
-    setNotes(data);
+  const renameFolder = async (folderId, folderName) => {
+    const updatedFolder = (
+      await axios.patch(getUrl(`folder/${folderId}`), {
+        folderName,
+      })
+    ).data;
+
+    const updatedFolderList = folders.map((folder) => {
+      if (folder._id === updatedFolder._id) {
+        return updatedFolder;
+      }
+
+      return folder;
+    });
+
+    setFolders(updatedFolderList);
   };
 
-  const activeNoteId = useMemo(
-    () => notes[activeFolderId]?.activeNoteId,
-    [notes, activeFolderId]
-  );
+  // const activeNoteId = useMemo(
+  //   () => activeFolder?.activeNoteId,
+  //   [folders, activeFolder]
+  // );
+
+  const activeNoteId = null;
+
+  // useEffect(() => {
+  //   setIsSaved(0);
+  //   const timmer = setTimeout(() => {
+  //     chrome &&
+  //       chrome.storage &&
+  //       chrome.storage.local.set({ notes: folders }, function () {
+  //         console.log("Notes Updated");
+  //         const error = chrome.runtime.lastError;
+  //         if (error) {
+  //           console.log("Storage Exceeded");
+  //           setIsSaved(2);
+  //         }
+
+  //         if (!Object.keys(folders).length) {
+  //           setActiveFolderId("");
+  //         }
+  //       });
+  //     setIsSaved(1);
+  //   }, 1000);
+
+  //   return () => clearTimeout(timmer);
+  // }, [folders]);
+
+  // useEffect(() => {
+  //   const timmer = setTimeout(() => {
+  //     chrome &&
+  //       chrome.storage &&
+  //       chrome.storage.local.set(
+  //         { activeFolderId: activeFolderId },
+  //         function () {
+  //           console.log("Active Folder Changed");
+  //         }
+  //       );
+  //   }, 100);
+
+  //   return () => clearTimeout(timmer);
+  // }, [activeFolderId]);
+
+  // useEffect(() => {
+  //   setIsSaved(0);
+  //   const timmer = setTimeout(() => {
+  //     chrome &&
+  //       chrome.storage &&
+  //       chrome.storage.local.set({ activeTheme: activeTheme }, function () {
+  //         console.log("Theme Changed");
+  //       });
+  //     setIsSaved(1);
+  //   }, 100);
+
+  //   return () => clearTimeout(timmer);
+  // }, [activeTheme]);
 
   useEffect(() => {
-    setIsSaved(0);
-    const timmer = setTimeout(() => {
-      chrome &&
-        chrome.storage &&
-        chrome.storage.local.set({ notes: notes }, function () {
-          console.log("Notes Updated");
-          const error = chrome.runtime.lastError;
-          if (error) {
-            console.log("Storage Exceeded");
-            setIsSaved(2);
-          }
+    // if (chrome.storage) {
+    //   chrome.storage.local.get(["notes"], function (result) {
+    //     if (result.notes) {
+    //       setFolders(result.notes);
+    //     }
+    //   });
+    //   chrome.storage.local.get(["activeTheme"], function (result) {
+    //     if (result.activeTheme) {
+    //       setActiveTheme(result.activeTheme);
+    //     }
+    //   });
+    //   chrome.storage.local.get(["activeFolderId"], function (result) {
+    //     if (result.activeFolderId) {
+    //       setActiveFolderId(result.activeFolderId);
+    //     }
+    //   });
+    // }
+    // mongodb read
 
-          if (!Object.keys(notes).length) {
-            setActiveFolderId("");
-          }
-        });
-      setIsSaved(1);
-    }, 1000);
+    const token =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFtaXRoYnI2QGdtYWlsLmNvbSIsIm5hbWUiOiJBbWl0aCBCIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBY0hUdGR1RVdJRmI0aWVHeU5PUnZLVXFpWEtzQVBreWgwbmVFM1drSWJDSEE9czk2LWMiLCJfaWQiOiI2NDdiMzJhNzVlNjhjOTQzYTMwYTM3ZTQiLCJpYXQiOjE2ODU4NzM4MTMsImV4cCI6MTY4NjQ3ODYxM30.aGEzvtWihKf7K8fa5LAIpQbR_brk7uM20xPibINsRzY";
 
-    return () => clearTimeout(timmer);
-  }, [notes]);
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-  useEffect(() => {
-    const timmer = setTimeout(() => {
-      chrome &&
-        chrome.storage &&
-        chrome.storage.local.set(
-          { activeFolderId: activeFolderId },
-          function () {
-            console.log("Active Folder Changed");
-          }
-        );
-    }, 100);
-
-    return () => clearTimeout(timmer);
-  }, [activeFolderId]);
-
-  useEffect(() => {
-    setIsSaved(0);
-    const timmer = setTimeout(() => {
-      chrome &&
-        chrome.storage &&
-        chrome.storage.local.set({ activeTheme: activeTheme }, function () {
-          console.log("Theme Changed");
-        });
-      setIsSaved(1);
-    }, 100);
-
-    return () => clearTimeout(timmer);
-  }, [activeTheme]);
-
-  useEffect(() => {
-    if (chrome.storage) {
-      chrome.storage.local.get(["notes"], function (result) {
-        if (result.notes) {
-          setNotes(result.notes);
-        }
-      });
-      chrome.storage.local.get(["activeTheme"], function (result) {
-        if (result.activeTheme) {
-          setActiveTheme(result.activeTheme);
-        }
-      });
-      chrome.storage.local.get(["activeFolderId"], function (result) {
-        if (result.activeFolderId) {
-          setActiveFolderId(result.activeFolderId);
-        }
-      });
-    }
+    fetchFolders();
   }, []);
+
+  const fetchFolders = async () => {
+    const folderList = await axios.get(getUrl("folder"));
+
+    setFolders(folderList.data);
+  };
 
   return (
     <NotesContext.Provider
       value={{
-        notes,
-        setNotes,
+        folders,
+        setFolders,
         activeNoteId,
         setActiveNoteId,
-        activeFolderId,
-        setActiveFolderId,
+        activeFolder,
+        setActiveFolder,
+        updateActiveFolder,
         themes,
         activeTheme,
         setActiveTheme,
