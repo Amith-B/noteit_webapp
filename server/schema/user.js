@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema({
   folderIds: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Folder", default: [] },
   ],
+  activeFolderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Folder",
+  },
 });
 
 const User = mongoose.model("User", userSchema);

@@ -129,15 +129,13 @@ function Tabs({ onSidePanelToggle }) {
               <button
                 className={
                   "tab " +
-                  (activeFolder?.activeNoteId === note._id
+                  (activeFolder.activeNoteId === note._id
                     ? "active"
                     : "clickable")
                 }
                 key={note._id}
-                onClick={() => setActiveNoteId(activeFolder, note._id)}
-                tabIndex={
-                  activeFolder?.activeNoteId === note._id ? "-1" : "0"
-                }
+                onClick={() => setActiveNoteId(activeFolder._id, note._id)}
+                tabIndex={activeFolder.activeNoteId === note._id ? "-1" : "0"}
               >
                 <div className="tab-title" title={note.title}>
                   {note.title}
