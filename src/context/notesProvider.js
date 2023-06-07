@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /*global chrome*/
 import NotesContext from "./notesContext";
@@ -134,11 +134,6 @@ export default function NotesProvider({ children }) {
   };
 
   const closeFolder = async (folderId) => {
-    // setFolders(folders);
-    // if (folderId === activeFolder._id) {
-    //   setActiveFolder(null);
-    // }
-
     const deletedFolder = (await axios.delete(getUrl(`folder/${folderId}`)))
       .data;
     const filteredFolders = folders.filter(
@@ -193,84 +188,27 @@ export default function NotesProvider({ children }) {
     });
   };
 
-  // const activeNoteId = useMemo(
-  //   () => activeFolder?.activeNoteId,
-  //   [folders, activeFolder]
-  // );
-
-  const activeNoteId = null;
-
-  // useEffect(() => {
-  //   setIsSaved(0);
-  //   const timmer = setTimeout(() => {
-  //     chrome &&
-  //       chrome.storage &&
-  //       chrome.storage.local.set({ notes: folders }, function () {
-  //         console.log("Notes Updated");
-  //         const error = chrome.runtime.lastError;
-  //         if (error) {
-  //           console.log("Storage Exceeded");
-  //           setIsSaved(2);
-  //         }
-
-  //         if (!Object.keys(folders).length) {
-  //           setActiveFolderId("");
-  //         }
-  //       });
-  //     setIsSaved(1);
-  //   }, 1000);
-
-  //   return () => clearTimeout(timmer);
-  // }, [folders]);
-
-  // useEffect(() => {
-  //   const timmer = setTimeout(() => {
-  //     chrome &&
-  //       chrome.storage &&
-  //       chrome.storage.local.set(
-  //         { activeFolderId: activeFolderId },
-  //         function () {
-  //           console.log("Active Folder Changed");
-  //         }
-  //       );
-  //   }, 100);
-
-  //   return () => clearTimeout(timmer);
-  // }, [activeFolderId]);
-
-  // useEffect(() => {
-  //   setIsSaved(0);
-  //   const timmer = setTimeout(() => {
-  //     chrome &&
-  //       chrome.storage &&
-  //       chrome.storage.local.set({ activeTheme: activeTheme }, function () {
-  //         console.log("Theme Changed");
-  //       });
-  //     setIsSaved(1);
-  //   }, 100);
-
-  //   return () => clearTimeout(timmer);
-  // }, [activeTheme]);
+  const activeNoteId = useMemo(
+    () => activeFolder?.activeNoteId,
+    [activeFolder]
+  );
 
   useEffect(() => {
-    // if (chrome.storage) {
-    //   chrome.storage.local.get(["notes"], function (result) {
-    //     if (result.notes) {
-    //       setFolders(result.notes);
-    //     }
-    //   });
-    //   chrome.storage.local.get(["activeTheme"], function (result) {
-    //     if (result.activeTheme) {
-    //       setActiveTheme(result.activeTheme);
-    //     }
-    //   });
-    //   chrome.storage.local.get(["activeFolderId"], function (result) {
-    //     if (result.activeFolderId) {
-    //       setActiveFolderId(result.activeFolderId);
-    //     }
-    //   });
-    // }
-    // mongodb read
+    chrome &&
+      chrome.storage &&
+      chrome.storage.local.set({ activeTheme: activeTheme }, function () {
+        console.log("Theme Changed");
+      });
+  }, [activeTheme]);
+
+  useEffect(() => {
+    if (chrome.storage) {
+      chrome.storage.local.get(["activeTheme"], function (result) {
+        if (result.activeTheme) {
+          setActiveTheme(result.activeTheme);
+        }
+      });
+    }
 
     const token =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFtaXRoYnI2QGdtYWlsLmNvbSIsIm5hbWUiOiJBbWl0aCBCIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBY0hUdGR1RVdJRmI0aWVHeU5PUnZLVXFpWEtzQVBreWgwbmVFM1drSWJDSEE9czk2LWMiLCJfaWQiOiI2NDdiMzJhNzVlNjhjOTQzYTMwYTM3ZTQiLCJpYXQiOjE2ODU4NzM4MTMsImV4cCI6MTY4NjQ3ODYxM30.aGEzvtWihKf7K8fa5LAIpQbR_brk7uM20xPibINsRzY";

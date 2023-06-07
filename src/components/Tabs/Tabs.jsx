@@ -1,4 +1,3 @@
-/*global chrome*/
 import "./Tabs.scss";
 
 import React, {
@@ -31,8 +30,6 @@ function Tabs({ onSidePanelToggle }) {
   } = useContext(NotesContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
-  const [maxLimit, setMaxLimit] = useState(0);
-  const [usedSpace, setUsedSpace] = useState(0);
   const tabGroup = useRef();
 
   useEffect(() => {
@@ -57,20 +54,9 @@ function Tabs({ onSidePanelToggle }) {
     [tabGroup]
   );
 
-  // useEffect(() => {
-  //   if (chrome.storage && chrome.storage.local) {
-  //     chrome.storage.local.getBytesInUse().then((value) => {
-  //       setUsedSpace(value);
-  //     });
-  //   }
-  // }, [folders]);
-
   useEffect(() => {
     const tabRef = tabGroup.current;
     tabRef.addEventListener("wheel", handleHorizontalScroll);
-    // if (chrome.storage && chrome.storage.local) {
-    //   setMaxLimit(chrome.storage.local.QUOTA_BYTES);
-    // }
 
     return () => tabRef.removeEventListener("wheel", handleHorizontalScroll);
     // eslint-disable-next-line
@@ -190,17 +176,6 @@ function Tabs({ onSidePanelToggle }) {
               {theme.charAt(0).toUpperCase() + theme.slice(1)}
             </div>
           ))}
-          <hr />
-          <h4>Storage Used</h4>
-          <hr />
-          <span className="notes-menu-item">
-            <progress
-              style={{ width: "120px" }}
-              type="progress"
-              max={maxLimit}
-              value={usedSpace}
-            ></progress>
-          </span>
           <hr />
           <h4>Export As</h4>
           <hr />
