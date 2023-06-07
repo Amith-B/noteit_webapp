@@ -42,8 +42,8 @@ router.delete("/:noteId", async (req, res) => {
       return;
     }
 
-    await Folder.findByIdAndUpdate(deletedNotes.folderId.toString(), {
-      $pull: { noteIds: deletedNotes.id },
+    await Folder.findByIdAndUpdate(deletedNotes.folderId, {
+      $pull: { notes: deletedNotes._id },
     });
 
     res.send(JSON.stringify(deletedNotes));
@@ -76,7 +76,7 @@ router.post("/:folderId/add", async (req, res) => {
   newNote.save();
 
   try {
-    await Folder.findByIdAndUpdate(folderId, {
+    await folder.updateOne({
       $push: { notes: newNote.id },
       $set: { activeNoteId: newNote.id },
     });
@@ -100,7 +100,7 @@ router.patch("/activenote", async (req, res) => {
   }
 
   try {
-    const note = await Note.findById(activeNoteId);
+    const note = await Note.findOne({ _id: activeNoteId, userId });
     const updatedFolder = await Folder.findOneAndUpdate(
       { _id: note.folderId, userId },
       {

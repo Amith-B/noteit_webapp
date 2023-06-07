@@ -141,6 +141,10 @@ export default function NotesProvider({ children }) {
     );
 
     setFolders(filteredFolders);
+
+    if (activeFolder?._id === folderId) {
+      setActiveFolder(null);
+    }
   };
 
   const updateNotes = async (noteId, title, content) => {

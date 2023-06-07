@@ -4,7 +4,6 @@ const router = express.Router();
 // model
 const Folder = require("../schema/folder");
 const User = require("../schema/user");
-const Note = require("../schema/notes");
 
 router.get("/", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
@@ -88,7 +87,10 @@ router.patch("/activefolder", async (req, res) => {
   }
 
   try {
-    const folder = await Folder.findById(activeFolderId).populate("notes");
+    const folder = await Folder.findOne({
+      _id: activeFolderId,
+      userId,
+    }).populate("notes");
 
     if (!folder) {
       res.status(400).json({ message: "Bad Request, invalid folder id" });
