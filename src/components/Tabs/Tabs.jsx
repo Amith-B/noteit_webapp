@@ -144,7 +144,7 @@ function Tabs({ onSidePanelToggle }) {
                   className="clickable tab-close flex-center"
                   onClick={(event) => {
                     event.stopPropagation();
-                    closeTab(activeFolder, note._id);
+                    closeTab(note._id);
                   }}
                 >
                   +

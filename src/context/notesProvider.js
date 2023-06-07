@@ -11,7 +11,7 @@ export default function NotesProvider({ children }) {
   const [activeFolder, setActiveFolder] = useState(initialData.activeFolder);
   const themes = initialData.themes;
   const [activeTheme, setActiveTheme] = useState(initialData.activeTheme);
-  const [isSaved, setIsSaved] = useState(0); // 0 - not saved, 1 - saved, 2 - error
+  const [isSaved, setIsSaved] = useState(1); // 0 - not saved, 1 - saved, 2 - error
 
   const setActiveNoteId = (folderId, activeNoteId) => {
     const newFolderList = folders.map((folder) => {
@@ -33,18 +33,36 @@ export default function NotesProvider({ children }) {
     });
   };
 
-  const addNote = () => {
-    const data = { ...folders };
-    const newNoteId = "note_" + new Date().getTime().toString();
-    if (activeFolder) {
-      activeFolder.notes.push({
-        id: newNoteId,
+  const addNote = async () => {
+    if (!activeFolder._id) {
+      return;
+    }
+
+    const newNote = (
+      await axios.post(getUrl(`notes/${activeFolder._id}/add`), {
         title: "New Note",
         content: "",
-      });
-      setActiveNoteId(activeFolder._id, newNoteId);
-      setFolders(data);
-    }
+      })
+    ).data;
+
+    const updatedFolder = folders.map((folder) => {
+      if (folder._id === newNote.folderId) {
+        return {
+          ...folder,
+          notes: folder.notes.concat(newNote),
+        };
+      }
+
+      return folder;
+    });
+
+    setFolders(updatedFolder);
+
+    setActiveFolder({
+      ...activeFolder,
+      activeNoteId: newNote._id,
+      notes: activeFolder.notes.concat(newNote),
+    });
   };
 
   const addFolder = async () => {
@@ -74,16 +92,44 @@ export default function NotesProvider({ children }) {
     setFolders(newFolderList);
   };
 
-  const closeTab = (folderId, noteId) => {
-    if (Reflect.has(folders, folderId)) {
-      const data = { ...folders };
-      data[folderId].list = data[folderId].list.filter(
-        (note) => note.id !== noteId
-      );
-      setFolders(data);
-      // if (data[folderId].activeNoteId === noteId) {
-      //   setActiveNoteId(folderId, "");
-      // }
+  const closeTab = async (noteId) => {
+    if (!activeFolder._id) {
+      return;
+    }
+
+    const deletedNote = (await axios.delete(getUrl(`notes/${noteId}`))).data;
+
+    const updatedFolders = folders.map((folder) => {
+      if (folder._id === deletedNote.folderId) {
+        return {
+          ...folder,
+          notes: folder.notes.filter((note) => note._id !== deletedNote._id),
+        };
+      }
+
+      return folder;
+    });
+
+    setFolders(updatedFolders);
+
+    const updatedNotesList = activeFolder.notes.filter(
+      (note) => note._id !== deletedNote._id
+    );
+
+    if (activeFolder.activeNoteId === noteId) {
+      setActiveFolder({
+        ...activeFolder,
+        activeNoteId: updatedNotesList[updatedNotesList.length - 1]?._id,
+        notes: updatedNotesList,
+      });
+      await axios.patch(getUrl("notes/activenote"), {
+        activeNoteId: updatedNotesList[updatedNotesList.length - 1]?._id,
+      });
+    } else {
+      setActiveFolder({
+        ...activeFolder,
+        notes: updatedNotesList,
+      });
     }
   };
 

@@ -75,12 +75,51 @@ router.post("/:folderId/add", async (req, res) => {
   });
   newNote.save();
 
-  await Folder.findByIdAndUpdate(folderId, {
-    $push: { noteIds: newNote.id },
-    $set: { activeNoteId: newNote.id },
-  });
+  try {
+    await Folder.findByIdAndUpdate(folderId, {
+      $push: { notes: newNote.id },
+      $set: { activeNoteId: newNote.id },
+    });
 
-  res.send(JSON.stringify(newNote));
+    res.send(JSON.stringify(newNote));
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error, Unable to add note" });
+  }
+});
+
+router.patch("/activenote", async (req, res) => {
+  const { _id: userId } = res.locals.tokenData;
+  const { activeNoteId } = req.body;
+
+  if (!activeNoteId) {
+    res.status(400).json({ message: "Bad Request, activeNoteId required" });
+    return;
+  }
+
+  try {
+    const note = await Note.findById(activeNoteId);
+    const updatedFolder = await Folder.findOneAndUpdate(
+      { _id: note.folderId, userId },
+      {
+        $set: { activeNoteId: note._id },
+      }
+    );
+
+    if (!updatedFolder) {
+      res.status(400).json({ message: "Bad Request, invalid folder" });
+      return;
+    }
+
+    res.send(JSON.stringify(updatedFolder));
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error, Unable to set active note" });
+  }
 });
 
 router.patch("/:noteId", async (req, res) => {
