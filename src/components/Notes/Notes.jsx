@@ -1,11 +1,14 @@
-import { useContext, useState } from "react";
 import "./Notes.scss";
+
+import { useContext, useState } from "react";
+
+import NotesContext from "../../context/notesContext";
 import TabContent from "../TabContent/TabContent";
 import Tabs from "../Tabs/Tabs";
-import NotesContext from "../../context/notesContext";
 
 function Notes() {
-  const { activeTheme, isSaved, activeNoteId } = useContext(NotesContext);
+  const { activeTheme, isSaved, activeNoteId, isLoading } =
+    useContext(NotesContext);
   const [sidePanelToggle, setSidePanelToggle] = useState(false);
 
   return (
@@ -16,6 +19,15 @@ function Notes() {
         (sidePanelToggle ? " sidepanel-active" : "")
       }
     >
+      {isLoading && (
+        <div className="lds-loading-overlay">
+          <div className="lds-loading">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      )}
       <div className={"save-status " + (isSaved === 2 ? "error" : "")}>
         {isSaved === 1
           ? "Saved✔️"

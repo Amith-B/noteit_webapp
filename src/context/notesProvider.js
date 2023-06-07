@@ -12,6 +12,7 @@ export default function NotesProvider({ children }) {
   const themes = initialData.themes;
   const [activeTheme, setActiveTheme] = useState(initialData.activeTheme);
   const [isSaved, setIsSaved] = useState(1); // 0 - not saved, 1 - saved, 2 - error
+  const [isLoading, setIsLoading] = useState(false);
 
   const setActiveNoteId = (folderId, activeNoteId) => {
     const newFolderList = folders.map((folder) => {
@@ -38,6 +39,8 @@ export default function NotesProvider({ children }) {
       return;
     }
 
+    setIsLoading(true);
+
     const newNote = (
       await axios.post(getUrl(`notes/${activeFolder._id}/add`), {
         title: "New Note",
@@ -63,17 +66,23 @@ export default function NotesProvider({ children }) {
       activeNoteId: newNote._id,
       notes: activeFolder.notes.concat(newNote),
     });
+
+    setIsLoading(false);
   };
 
   const addFolder = async () => {
+    setIsLoading(true);
     const newFolder = await axios.post(getUrl("folder"), {
       folderName: "New Folder",
     });
 
     setFolders(folders.concat(newFolder.data));
+    setIsLoading(false);
   };
 
   const updateActiveFolder = async (activeFolderData) => {
+    setIsLoading(true);
+
     const updatedActiveFolder = (
       await axios.patch(getUrl("folder/activefolder"), {
         activeFolderId: activeFolderData._id,
@@ -81,6 +90,7 @@ export default function NotesProvider({ children }) {
     ).data;
 
     setActiveFolder(updatedActiveFolder);
+    setIsLoading(false);
 
     const newFolderList = folders.map((folder) => {
       if (folder._id === activeFolderData._id) {
@@ -96,6 +106,8 @@ export default function NotesProvider({ children }) {
     if (!activeFolder._id) {
       return;
     }
+
+    setIsLoading(true);
 
     const deletedNote = (await axios.delete(getUrl(`notes/${noteId}`))).data;
 
@@ -131,9 +143,13 @@ export default function NotesProvider({ children }) {
         notes: updatedNotesList,
       });
     }
+
+    setIsLoading(false);
   };
 
   const closeFolder = async (folderId) => {
+    setIsLoading(true);
+
     const deletedFolder = (await axios.delete(getUrl(`folder/${folderId}`)))
       .data;
     const filteredFolders = folders.filter(
@@ -145,6 +161,8 @@ export default function NotesProvider({ children }) {
     if (activeFolder?._id === folderId) {
       setActiveFolder(null);
     }
+
+    setIsLoading(false);
   };
 
   const updateNotes = async (noteId, title, content) => {
@@ -223,10 +241,12 @@ export default function NotesProvider({ children }) {
   }, []);
 
   const fetchFolders = async () => {
+    setIsLoading(true);
     const { folders, activeFolder } = (await axios.get(getUrl("folder"))).data;
 
     setFolders(folders);
     setActiveFolder(activeFolder);
+    setIsLoading(false);
   };
 
   return (
@@ -250,6 +270,7 @@ export default function NotesProvider({ children }) {
         closeTab,
         closeFolder,
         updateNotes,
+        isLoading,
       }}
     >
       {children}
