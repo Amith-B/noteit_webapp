@@ -1,6 +1,6 @@
+/*global chrome*/
 import { useEffect, useMemo, useState } from "react";
 
-/*global chrome*/
 import NotesContext from "./notesContext";
 import axios from "axios";
 import { getUrl } from "../utils/api";
@@ -13,6 +13,7 @@ export default function NotesProvider({ children }) {
   const [activeTheme, setActiveTheme] = useState(initialData.activeTheme);
   const [isSaved, setIsSaved] = useState(1); // 0 - not saved, 1 - saved, 2 - error
   const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState(null);
 
   const setActiveNoteId = (folderId, activeNoteId) => {
     const newFolderList = folders.map((folder) => {
@@ -230,15 +231,32 @@ export default function NotesProvider({ children }) {
           setActiveTheme(result.activeTheme);
         }
       });
-    }
 
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFtaXRoYnI2QGdtYWlsLmNvbSIsIm5hbWUiOiJBbWl0aCBCIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBY0hUdGR1RVdJRmI0aWVHeU5PUnZLVXFpWEtzQVBreWgwbmVFM1drSWJDSEE9czk2LWMiLCJfaWQiOiI2NDdiMzJhNzVlNjhjOTQzYTMwYTM3ZTQiLCJpYXQiOjE2ODU4NzM4MTMsImV4cCI6MTY4NjQ3ODYxM30.aGEzvtWihKf7K8fa5LAIpQbR_brk7uM20xPibINsRzY";
+      setIsLoading(true);
+      chrome.storage.local.get(["auth_token"], function (result) {
+        if (result.auth_token) {
+          setToken(result.auth_token);
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+    setIsLoading(true);
+
+    chrome.storage &&
+      chrome.storage.local.set({ auth_token: token }, function () {
+        console.log("Token Updated");
+      });
 
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
     fetchFolders();
-  }, []);
+
+    setIsLoading(false);
+  }, [token]);
 
   const fetchFolders = async () => {
     setIsLoading(true);
@@ -271,6 +289,8 @@ export default function NotesProvider({ children }) {
         closeFolder,
         updateNotes,
         isLoading,
+        token,
+        setToken,
       }}
     >
       {children}
