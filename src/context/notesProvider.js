@@ -103,21 +103,23 @@ export default function NotesProvider({ children }) {
   };
 
   const updateNotes = (folderId, noteId, title, content) => {
-    if (Reflect.has(folders, folderId)) {
-      const data = { ...folders };
-      data[folderId].list = data[folderId].list.map((note) => {
-        if (note.id === noteId) {
-          return {
-            id: noteId,
-            title,
-            content,
-          };
-        }
+    // if (Reflect.has(folders, folderId)) {
+    //   const data = { ...folders };
+    //   data[folderId].list = data[folderId].list.map((note) => {
+    //     if (note.id === noteId) {
+    //       return {
+    //         id: noteId,
+    //         title,
+    //         content,
+    //       };
+    //     }
 
-        return note;
-      });
-      setFolders(data);
-    }
+    //     return note;
+    //   });
+    //   setFolders(data);
+    // }
+
+    console.log("Updating Notes");
   };
 
   const renameFolder = (folderId, folderName) => {

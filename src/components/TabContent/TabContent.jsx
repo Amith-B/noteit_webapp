@@ -1,21 +1,23 @@
 import "./TabContent.scss";
-import React, { useState, useEffect, useContext, useMemo } from "react";
+
+import React, { useContext, useEffect, useMemo, useState } from "react";
+
 import NotesContext from "../../context/notesContext";
 
 function TabContent() {
-  const { notes, activeFolderId, updateNotes } = useContext(NotesContext);
+  const { activeFolder, updateNotes } = useContext(NotesContext);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
   const activeNoteData = useMemo(() => {
-    if (activeFolderId && Reflect.has(notes, activeFolderId)) {
-      return notes[activeFolderId].list.find(
-        (note) => note.id === notes[activeFolderId].activeNoteId
+    if (activeFolder && activeFolder.activeNoteId) {
+      return activeFolder.notes.find(
+        (note) => note._id === activeFolder.activeNoteId
       );
     }
 
     return undefined;
-  }, [notes, activeFolderId]);
+  }, [activeFolder]);
 
   useEffect(() => {
     if (activeNoteData) {
@@ -42,8 +44,8 @@ function TabContent() {
         return;
       } else {
         updateNotes(
-          activeFolderId,
-          notes[activeFolderId].activeNoteId,
+          activeFolder._id,
+          activeFolder.activeNoteId,
           title,
           content
         );
@@ -53,7 +55,7 @@ function TabContent() {
 
   return (
     <div className="tab-content__container">
-      {activeFolderId && notes[activeFolderId]?.activeNoteId ? (
+      {activeFolder && activeFolder.activeNoteId ? (
         <div style={{ height: "100%" }}>
           <div className="tab-content__title-container">
             <input
@@ -82,7 +84,7 @@ function TabContent() {
             <label htmlFor="content">Add notes...</label>
           </div>
         </div>
-      ) : activeFolderId ? (
+      ) : activeFolder ? (
         <div className="tab-content__no-tab flex-center">No Note Selected</div>
       ) : (
         <div className="tab-content__no-tab flex-center">

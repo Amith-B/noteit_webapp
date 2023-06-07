@@ -88,10 +88,7 @@ router.patch("/activefolder", async (req, res) => {
   }
 
   try {
-    const folder = await Folder.findById(activeFolderId).populate(
-      "notes",
-      "title _id"
-    );
+    const folder = await Folder.findById(activeFolderId).populate("notes");
 
     if (!folder) {
       res.status(400).json({ message: "Bad Request, invalid folder id" });
