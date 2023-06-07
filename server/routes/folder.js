@@ -108,44 +108,6 @@ router.patch("/activefolder", async (req, res) => {
   }
 });
 
-router.patch("/:folderId/activenote", async (req, res) => {
-  const { _id: userId } = res.locals.tokenData;
-  const { activeNoteId } = req.body;
-  const { folderId } = req.params;
-
-  if (!folderId) {
-    res.status(400).json({ message: "Bad Request, folder id required" });
-    return;
-  }
-
-  if (!activeNoteId) {
-    res.status(400).json({ message: "Bad Request, activeNoteId required" });
-    return;
-  }
-
-  try {
-    const note = await Note.findById(activeNoteId);
-    if (!note) {
-      res.status(400).json({ message: "Bad Request, invalid note" });
-      return;
-    }
-
-    await Folder.findOneAndUpdate(
-      { _id: folderId, userId },
-      {
-        $set: { activeNoteId: note._id },
-      }
-    );
-
-    res.send(JSON.stringify({ activeNoteId: note._id }));
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error, Unable to set active note" });
-  }
-});
-
 router.patch("/:folderId", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
   const { folderName } = req.body;

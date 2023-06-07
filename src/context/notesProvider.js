@@ -18,7 +18,7 @@ export default function NotesProvider({ children }) {
       if (folder._id === folderId) {
         const activeFolderData = {
           ...activeFolder,
-          activeNoteId: activeNoteId,
+          activeNoteId,
         };
         setActiveFolder(activeFolderData);
         return activeFolderData;
@@ -28,7 +28,7 @@ export default function NotesProvider({ children }) {
 
     setFolders(newFolderList);
 
-    axios.patch(getUrl(`folder/${folderId}/activenote`), {
+    axios.patch(getUrl("notes/activenote"), {
       activeNoteId,
     });
   };
@@ -122,7 +122,7 @@ export default function NotesProvider({ children }) {
         activeNoteId: updatedNotesList[updatedNotesList.length - 1]?._id,
         notes: updatedNotesList,
       });
-      await axios.patch(getUrl("notes/activenote"), {
+      axios.patch(getUrl("notes/activenote"), {
         activeNoteId: updatedNotesList[updatedNotesList.length - 1]?._id,
       });
     } else {
