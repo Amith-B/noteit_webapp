@@ -125,7 +125,7 @@ function Tabs({ onSidePanelToggle }) {
         {" "}
         <div className="tab-group hide-scrollbar" ref={tabGroup}>
           {activeFolder &&
-            activeFolder?.noteIds?.map((note) => (
+            activeFolder?.notes?.map((note) => (
               <button
                 className={
                   "tab " +

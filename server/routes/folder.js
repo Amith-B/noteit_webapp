@@ -10,35 +10,17 @@ router.get("/", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
 
   const folderData = await User.findById(userId)
-    .select("folderIds activeFolderId")
+    .select("folders activeFolder")
     .populate({
-      path: "folderIds",
-      populate: { path: "noteIds", select: "_id" },
+      path: "folders",
+      populate: { path: "notes", select: "_id" },
     })
     .populate({
-      path: "activeFolderId",
-      populate: { path: "noteIds" },
+      path: "activeFolder",
+      populate: { path: "notes" },
     });
 
   res.send(JSON.stringify(folderData));
-});
-
-// TODO: this might get removed as it is not used
-router.get("/:folderId/notes", async (req, res) => {
-  const { _id: userId } = res.locals.tokenData;
-  const { folderId } = req.params;
-
-  if (!folderId) {
-    res.status(400).json({ message: "Bad Request, folder id required" });
-    return;
-  }
-
-  const notesList = await Folder.findOne({ _id: folderId, userId }).populate(
-    "noteIds",
-    "title _id"
-  );
-
-  res.send(JSON.stringify(notesList.noteIds));
 });
 
 router.post("/", async (req, res) => {
@@ -57,7 +39,7 @@ router.post("/", async (req, res) => {
   newFolder.save();
 
   await User.findByIdAndUpdate(userId, {
-    $push: { folderIds: newFolder.id },
+    $push: { folders: newFolder.id },
   });
 
   res.send(JSON.stringify(newFolder));
@@ -84,7 +66,7 @@ router.delete("/:folderId", async (req, res) => {
     }
 
     await User.findByIdAndUpdate(userId, {
-      $pull: { folderIds: deletedFolder.id },
+      $pull: { folders: deletedFolder.id },
     });
 
     res.send(JSON.stringify(deletedFolder));
@@ -107,7 +89,7 @@ router.patch("/activefolder", async (req, res) => {
 
   try {
     const folder = await Folder.findById(activeFolderId).populate(
-      "noteIds",
+      "notes",
       "title _id"
     );
 
@@ -117,7 +99,7 @@ router.patch("/activefolder", async (req, res) => {
     }
 
     await User.findByIdAndUpdate(userId, {
-      $set: { activeFolderId: folder._id },
+      $set: { activeFolder: folder._id },
     });
 
     res.send(JSON.stringify(folder));

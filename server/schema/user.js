@@ -4,10 +4,10 @@ const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
   picture: String,
-  folderIds: [
+  folders: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Folder", default: [] },
   ],
-  activeFolderId: {
+  activeFolder: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Folder",
   },

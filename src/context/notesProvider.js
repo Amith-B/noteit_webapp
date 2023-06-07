@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 /*global chrome*/
 import NotesContext from "./notesContext";
@@ -13,18 +13,12 @@ export default function NotesProvider({ children }) {
   const [activeTheme, setActiveTheme] = useState(initialData.activeTheme);
   const [isSaved, setIsSaved] = useState(0); // 0 - not saved, 1 - saved, 2 - error
 
-  const setActiveNoteId = async (folderId, activeNoteId) => {
-    const updatedActiveNote = (
-      await axios.patch(getUrl(`folder/${folderId}/activenote`), {
-        activeNoteId,
-      })
-    ).data;
-
+  const setActiveNoteId = (folderId, activeNoteId) => {
     const newFolderList = folders.map((folder) => {
       if (folder._id === folderId) {
         const activeFolderData = {
           ...activeFolder,
-          activeNoteId: updatedActiveNote.activeNoteId,
+          activeNoteId: activeNoteId,
         };
         setActiveFolder(activeFolderData);
         return activeFolderData;
@@ -33,13 +27,17 @@ export default function NotesProvider({ children }) {
     });
 
     setFolders(newFolderList);
+
+    axios.patch(getUrl(`folder/${folderId}/activenote`), {
+      activeNoteId,
+    });
   };
 
   const addNote = () => {
     const data = { ...folders };
     const newNoteId = "note_" + new Date().getTime().toString();
     if (activeFolder) {
-      activeFolder.noteIds.push({
+      activeFolder.notes.push({
         id: newNoteId,
         title: "New Note",
         content: "",
@@ -122,22 +120,23 @@ export default function NotesProvider({ children }) {
     }
   };
 
-  const renameFolder = async (folderId, folderName) => {
-    const updatedFolder = (
-      await axios.patch(getUrl(`folder/${folderId}`), {
-        folderName,
-      })
-    ).data;
-
+  const renameFolder = (folderId, folderName) => {
     const updatedFolderList = folders.map((folder) => {
-      if (folder._id === updatedFolder._id) {
-        return updatedFolder;
+      if (folder._id === folderId) {
+        return {
+          ...folder,
+          folderName,
+        };
       }
 
       return folder;
     });
 
     setFolders(updatedFolderList);
+
+    axios.patch(getUrl(`folder/${folderId}`), {
+      folderName,
+    });
   };
 
   // const activeNoteId = useMemo(
@@ -228,11 +227,10 @@ export default function NotesProvider({ children }) {
   }, []);
 
   const fetchFolders = async () => {
-    const { folderIds, activeFolderId } = (await axios.get(getUrl("folder")))
-      .data;
+    const { folders, activeFolder } = (await axios.get(getUrl("folder"))).data;
 
-    setFolders(folderIds);
-    setActiveFolder(activeFolderId);
+    setFolders(folders);
+    setActiveFolder(activeFolder);
   };
 
   return (

@@ -76,7 +76,7 @@ function SidePanel({ open, onClose }) {
                   </div>
                   <div className="folder-controls">
                     <div className="folder-notes-count flex-center">
-                      {folder.noteIds.length}
+                      {folder.notes.length}
                     </div>
                     <div
                       className="clickable folder-rename flex-center"

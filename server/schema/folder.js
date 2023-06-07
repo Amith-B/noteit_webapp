@@ -10,7 +10,7 @@ const folderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  noteIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Note", default: [] }],
+  notes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Note", default: [] }],
 });
 
 const Folder = mongoose.model("Folder", folderSchema);
