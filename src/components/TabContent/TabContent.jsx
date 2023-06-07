@@ -29,7 +29,7 @@ function TabContent() {
   useEffect(() => {
     const timmer = setTimeout(() => {
       handleNotesDataChange(title, content);
-    }, 200);
+    }, 500);
 
     return () => clearTimeout(timmer);
     // eslint-disable-next-line
@@ -43,12 +43,7 @@ function TabContent() {
       ) {
         return;
       } else {
-        updateNotes(
-          activeFolder._id,
-          activeFolder.activeNoteId,
-          title,
-          content
-        );
+        updateNotes(activeFolder.activeNoteId, title, content);
       }
     }
   };

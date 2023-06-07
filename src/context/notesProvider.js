@@ -102,24 +102,30 @@ export default function NotesProvider({ children }) {
     setFolders(filteredFolders);
   };
 
-  const updateNotes = (folderId, noteId, title, content) => {
-    // if (Reflect.has(folders, folderId)) {
-    //   const data = { ...folders };
-    //   data[folderId].list = data[folderId].list.map((note) => {
-    //     if (note.id === noteId) {
-    //       return {
-    //         id: noteId,
-    //         title,
-    //         content,
-    //       };
-    //     }
+  const updateNotes = async (noteId, title, content) => {
+    const updatedNotes = activeFolder.notes.map((note) => {
+      if (note._id === noteId) {
+        return {
+          ...note,
+          title,
+          content,
+        };
+      }
 
-    //     return note;
-    //   });
-    //   setFolders(data);
-    // }
+      return note;
+    });
 
-    console.log("Updating Notes");
+    setActiveFolder({
+      ...activeFolder,
+      notes: updatedNotes,
+    });
+
+    setIsSaved(0);
+    await axios.patch(getUrl(`notes/${noteId}`), {
+      title,
+      content,
+    });
+    setIsSaved(1);
   };
 
   const renameFolder = (folderId, folderName) => {
