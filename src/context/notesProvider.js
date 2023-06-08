@@ -236,27 +236,36 @@ export default function NotesProvider({ children }) {
       chrome.storage.local.get(["auth_token"], function (result) {
         if (result.auth_token) {
           setToken(result.auth_token);
+          verifyToken();
         }
       });
     }
   }, []);
 
   useEffect(() => {
-    if (!token) {
-      return;
-    }
-    setIsLoading(true);
-
     chrome.storage &&
       chrome.storage.local.set({ auth_token: token }, function () {
         console.log("Token Updated");
       });
 
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    if (!token) {
+      return;
+    }
+    setIsLoading(true);
+
     fetchFolders();
 
     setIsLoading(false);
   }, [token]);
+
+  const verifyToken = async () => {
+    const response = (await axios.get(getUrl("signin/verifytoken"))).data;
+
+    if (!response.valid) {
+      setToken(null);
+    }
+  };
 
   const fetchFolders = async () => {
     setIsLoading(true);

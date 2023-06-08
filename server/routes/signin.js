@@ -49,4 +49,15 @@ router.get("/", (req, res) => {
     });
 });
 
+router.get("/verifytoken", (req, res) => {
+  const tokenData = res.locals.tokenData;
+
+  const expiration = new Date(tokenData.exp * 1000);
+  const currentTime = new Date();
+
+  const diff = (expiration.getTime() - currentTime.getTime()) / 1000;
+
+  res.status(200).json({ valid: diff > 60 });
+});
+
 module.exports = router;
