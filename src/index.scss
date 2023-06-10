@@ -64,6 +64,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   width: 800px;
   height: 500px;
+  overflow: hidden;
+  transform: scale(1); // to make all children relative to body
 }
 
 #root,
