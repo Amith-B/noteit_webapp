@@ -14,6 +14,7 @@ export default function NotesProvider({ children }) {
   const [isSaved, setIsSaved] = useState(1); // 0 - not saved, 1 - saved, 2 - error
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(null);
+  const [profile, setProfile] = useState(null);
 
   const setActiveNoteId = (folderId, activeNoteId) => {
     const newFolderList = folders.map((folder) => {
@@ -300,6 +301,8 @@ export default function NotesProvider({ children }) {
         isLoading,
         token,
         setToken,
+        profile,
+        setProfile,
       }}
     >
       {children}

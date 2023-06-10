@@ -7,8 +7,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { downloadJSON, downloadXLSX } from "../../utils/downloadNotes";
 
+import Menu from "../Menu/Menu";
 import NotesContext from "../../context/notesContext";
 import SidePanel from "../SidePanel/SidePanel";
 import arrowLeft from "../../assets/arrow-previous-left.svg";
@@ -16,18 +16,8 @@ import hamburger from "../../assets/hamburger.svg";
 import verticalDot from "../../assets/vertical_dots.svg";
 
 function Tabs({ onSidePanelToggle }) {
-  const {
-    themes,
-    activeTheme,
-    setActiveTheme,
-    folders,
-    activeFolder,
-    closeTab,
-    activeNoteId,
-    setActiveNoteId,
-    addNote,
-    setFolders,
-  } = useContext(NotesContext);
+  const { activeFolder, closeTab, activeNoteId, setActiveNoteId, addNote } =
+    useContext(NotesContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const tabGroup = useRef();
@@ -72,27 +62,6 @@ function Tabs({ onSidePanelToggle }) {
     if (activeTab) {
       activeTab.scrollIntoView();
     }
-  };
-
-  const handleDownloadXlsx = () => {
-    downloadXLSX(folders);
-  };
-
-  const handleDownloadJson = () => {
-    downloadJSON(folders);
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = handleFileRead;
-    reader.readAsText(file);
-  };
-
-  const handleFileRead = (e) => {
-    const content = e.target.result;
-    const jsonData = JSON.parse(content);
-    setFolders(jsonData);
   };
 
   return (
@@ -150,65 +119,7 @@ function Tabs({ onSidePanelToggle }) {
       >
         <img style={{ height: "16px" }} src={verticalDot} alt="3-dot" />
       </button>
-      <div
-        className={"notes-menu__overlay " + (menuOpen ? "visible" : "")}
-        onClick={() => setMenuOpen(false)}
-      >
-        <div
-          className="notes-menu"
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
-        >
-          <h4>Choose Theme</h4>
-          <hr />
-          {themes.map((theme) => (
-            <div
-              className={
-                "clickable notes-menu-item " +
-                (theme === activeTheme ? "active" : "")
-              }
-              key={theme}
-              onClick={() => {
-                setActiveTheme(theme);
-              }}
-            >
-              {theme.charAt(0).toUpperCase() + theme.slice(1)}
-            </div>
-          ))}
-          <hr />
-          <h4>Export As</h4>
-          <hr />
-          <div className="notes-menu-item export-import">
-            <button
-              className="export-import-button clickable"
-              onClick={handleDownloadXlsx}
-            >
-              .xlsx
-            </button>
-            <button
-              className="export-import-button clickable"
-              onClick={handleDownloadJson}
-            >
-              .json
-            </button>
-            <a id="downloadAnchorElem" style={{ display: "none" }} href="/#">
-              Download
-            </a>
-          </div>
-          <hr />
-          <h4>
-            Import From{" "}
-            <span style={{ padding: "0 6px" }} className="export-import-button">
-              .json
-            </span>
-          </h4>
-          <hr />
-          <div className="notes-menu-item export-import">
-            <input type="file" accept=".json" onChange={handleFileChange} />
-          </div>
-        </div>
-      </div>
+      <Menu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <SidePanel open={panelOpen} onClose={() => setPanelOpen(false)} />
     </section>
   );

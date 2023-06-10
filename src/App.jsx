@@ -7,7 +7,7 @@ import { getUrl } from "./utils/api";
 
 function App() {
   const signInButton = useRef(null);
-  const { setToken, token } = useContext(NotesContext);
+  const { setToken, token, setProfile } = useContext(NotesContext);
 
   const handleSignin = async (response) => {
     const signInResponse = (
@@ -18,7 +18,14 @@ function App() {
       })
     ).data;
 
-    setToken(signInResponse.token);
+    const { token, email, name, picture } = signInResponse;
+
+    setToken(token);
+    setProfile({
+      email,
+      name,
+      picture,
+    });
   };
 
   useEffect(() => {
@@ -31,13 +38,14 @@ function App() {
 
   useEffect(() => {
     /* global google */
-    if (signInButton.current) {
+    if (signInButton.current && google) {
       google.accounts.id.renderButton(signInButton.current, {
         theme: "outline",
         size: "large",
       });
     }
-  }, [signInButton]);
+  }, [signInButton, token]);
+
   return (
     <div className="App">
       {token ? (
