@@ -99,7 +99,14 @@ function Tabs({ onSidePanelToggle }) {
                   className="clickable tab-close flex-center"
                   onClick={(event) => {
                     event.stopPropagation();
-                    closeTab(note._id);
+
+                    if (
+                      window.confirm(
+                        "Are you sure you want to delete the notes? You will not be able to undo this action"
+                      )
+                    ) {
+                      closeTab(note._id);
+                    }
                   }}
                 >
                   +

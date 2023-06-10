@@ -23,6 +23,8 @@ router.post("/upload", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
   const notes = req.body;
 
+  // TODO: handle upload with verification
+
   res.send(JSON.stringify({ uploaded: true, notes }));
 });
 

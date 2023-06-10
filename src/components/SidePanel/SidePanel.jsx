@@ -92,7 +92,14 @@ function SidePanel({ open, onClose }) {
                       className="clickable folder-close flex-center"
                       onClick={(event) => {
                         event.stopPropagation();
-                        closeFolder(folder._id);
+                        if (
+                          !folder.notes.length ||
+                          window.confirm(
+                            "Are you sure you want to delete this folder? This folder contains one or more notes, you will not be able to undo this action"
+                          )
+                        ) {
+                          closeFolder(folder._id);
+                        }
                       }}
                     >
                       +
