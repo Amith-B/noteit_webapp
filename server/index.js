@@ -17,33 +17,38 @@ const folderRoutes = require("./routes/folder");
 
 // Middleware function
 const tokenVerificationMiddleware = (req, res, next) => {
-  const auth = req.headers.authorization;
-  if (!auth) {
-    res.status(401).json({ error: "Unauthorised" });
-    return;
-  }
-
-  const authToken = auth.replace("Bearer ", "");
-  const tokenData = jwt.decode(authToken);
-  res.locals.token = authToken;
-  res.locals.tokenData = tokenData;
-
-  if (!tokenData) {
-    res.status(400).json({ error: "Bad Request: Incorrect token" });
-    return;
-  }
-
   if (req.url.includes("/api/signin")) {
     next();
   } else {
     try {
+      const auth = req.headers.authorization;
+      if (!auth) {
+        res.status(401).json({ error: "Unauthorised" });
+        return;
+      }
+
+      const authToken = auth.replace("Bearer ", "");
+      const tokenData = jwt.decode(authToken);
+      res.locals.token = authToken;
+      res.locals.tokenData = tokenData;
+
+      if (!tokenData) {
+        res.status(400).json({
+          error: "Bad Request: Incorrect token",
+          code: "INCORRECT_TOKEN",
+        });
+        return;
+      }
+
       jwt.verify(authToken, process.env.TOKEN_SECRET);
       next();
     } catch (e) {
       if (e.name === jwt.JsonWebTokenError.name) {
-        res.status(401).json({ error: "Invalid token" });
+        res
+          .status(401)
+          .json({ error: "Invalid token", code: "INCORRECT_TOKEN" });
       } else if (e.name === jwt.TokenExpiredError.name) {
-        res.status(401).json({ error: "Token Expired" });
+        res.status(401).json({ error: "Token Expired", code: "TOKEN_EXPIRED" });
       } else {
         res.status(401).json({ error: "Unable to verify token" });
       }

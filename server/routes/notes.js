@@ -38,7 +38,7 @@ router.get("/:noteId", async (req, res) => {
       userId,
     });
     if (!notes) {
-      res.status(400).json({ message: "Bad Request, invalid notes" });
+      res.status(400).json({ error: "Bad Request, invalid notes" });
       return;
     }
 
@@ -46,7 +46,7 @@ router.get("/:noteId", async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Internal server error, unable to fetch note" });
+      .json({ error: "Internal server error, unable to fetch note" });
   }
 });
 
@@ -55,7 +55,7 @@ router.delete("/:noteId", async (req, res) => {
   const { noteId } = req.params;
 
   if (!noteId) {
-    res.status(400).json({ message: "Bad Request, note id required" });
+    res.status(400).json({ error: "Bad Request, note id required" });
     return;
   }
 
@@ -66,7 +66,7 @@ router.delete("/:noteId", async (req, res) => {
     });
 
     if (!deletedNotes) {
-      res.status(400).json({ message: "Bad Request, invalid notes" });
+      res.status(400).json({ error: "Bad Request, invalid notes" });
       return;
     }
 
@@ -77,9 +77,7 @@ router.delete("/:noteId", async (req, res) => {
     res.send(JSON.stringify(deletedNotes));
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error, Unable to delete" });
+    res.status(500).json({ error: "Internal Server Error, Unable to delete" });
   }
 });
 
@@ -92,7 +90,7 @@ router.post("/:folderId/add", async (req, res) => {
     const folder = await Folder.findOne({ _id: folderId, userId });
 
     if (!folder) {
-      res.status(400).json({ message: "Bad Request, invalid folder" });
+      res.status(400).json({ error: "Bad Request, invalid folder" });
       return;
     }
 
@@ -114,7 +112,7 @@ router.post("/:folderId/add", async (req, res) => {
     console.error(error);
     res
       .status(500)
-      .json({ message: "Internal Server Error, Unable to add note" });
+      .json({ error: "Internal Server Error, Unable to add note" });
   }
 });
 
@@ -123,7 +121,7 @@ router.patch("/activenote", async (req, res) => {
   const { activeNoteId } = req.body;
 
   if (!activeNoteId) {
-    res.status(400).json({ message: "Bad Request, activeNoteId required" });
+    res.status(400).json({ error: "Bad Request, activeNoteId required" });
     return;
   }
 
@@ -137,7 +135,7 @@ router.patch("/activenote", async (req, res) => {
     );
 
     if (!updatedFolder) {
-      res.status(400).json({ message: "Bad Request, invalid folder" });
+      res.status(400).json({ error: "Bad Request, invalid folder" });
       return;
     }
 
@@ -146,7 +144,7 @@ router.patch("/activenote", async (req, res) => {
     console.error(error);
     res
       .status(500)
-      .json({ message: "Internal Server Error, Unable to set active note" });
+      .json({ error: "Internal Server Error, Unable to set active note" });
   }
 });
 
@@ -156,7 +154,7 @@ router.patch("/:noteId", async (req, res) => {
   const { noteId } = req.params;
 
   if (!noteId) {
-    res.status(400).json({ message: "Bad Request, note id required" });
+    res.status(400).json({ error: "Bad Request, note id required" });
     return;
   }
 
@@ -170,16 +168,14 @@ router.patch("/:noteId", async (req, res) => {
     );
 
     if (!updatedNote) {
-      res.status(400).json({ message: "Bad Request, invalid notes" });
+      res.status(400).json({ error: "Bad Request, invalid notes" });
       return;
     }
 
     res.send(JSON.stringify(updatedNote));
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error, Unable to rename" });
+    res.status(500).json({ error: "Internal Server Error, Unable to rename" });
   }
 });
 

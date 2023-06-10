@@ -51,17 +51,6 @@
   }
 }
 
-.profile {
-  display: flex;
-  gap: 6px;
-
-  &-img {
-    --profile-size: 24px;
-    width: var(--profile-size);
-    height: var(--profile-size);
-  }
-}
-
 .menu {
   display: flex;
   gap: 6px;

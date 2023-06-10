@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Internal server error, unable to fetch folder" });
+      .json({ error: "Internal server error, unable to fetch folder" });
   }
 });
 
@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
   const { folderName } = req.body;
 
   if (!folderName) {
-    res.status(400).json({ message: "Bad Request, folder name is required" });
+    res.status(400).json({ error: "Bad Request, folder name is required" });
     return;
   }
 
@@ -52,7 +52,7 @@ router.post("/", async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Internal server error, unable to update folder" });
+      .json({ error: "Internal server error, unable to update folder" });
   }
 });
 
@@ -61,7 +61,7 @@ router.delete("/:folderId", async (req, res) => {
   const { folderId } = req.params;
 
   if (!folderId) {
-    res.status(400).json({ message: "Bad Request, folder id required" });
+    res.status(400).json({ error: "Bad Request, folder id required" });
     return;
   }
 
@@ -72,7 +72,7 @@ router.delete("/:folderId", async (req, res) => {
     });
 
     if (!deletedFolder) {
-      res.status(400).json({ message: "Bad Request, invalid folder" });
+      res.status(400).json({ error: "Bad Request, invalid folder" });
       return;
     }
 
@@ -83,9 +83,7 @@ router.delete("/:folderId", async (req, res) => {
     res.send(JSON.stringify(deletedFolder));
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error, Unable to delete" });
+    res.status(500).json({ error: "Internal Server Error, Unable to delete" });
   }
 });
 
@@ -94,7 +92,7 @@ router.patch("/activefolder", async (req, res) => {
   const { activeFolderId } = req.body;
 
   if (!activeFolderId) {
-    res.status(400).json({ message: "Bad Request, activeFolderId required" });
+    res.status(400).json({ error: "Bad Request, activeFolderId required" });
     return;
   }
 
@@ -105,7 +103,7 @@ router.patch("/activefolder", async (req, res) => {
     }).populate("notes");
 
     if (!folder) {
-      res.status(400).json({ message: "Bad Request, invalid folder id" });
+      res.status(400).json({ error: "Bad Request, invalid folder id" });
       return;
     }
 
@@ -118,7 +116,7 @@ router.patch("/activefolder", async (req, res) => {
     console.error(error);
     res
       .status(500)
-      .json({ message: "Internal Server Error, Unable to set active folder" });
+      .json({ error: "Internal Server Error, Unable to set active folder" });
   }
 });
 
@@ -128,12 +126,12 @@ router.patch("/:folderId", async (req, res) => {
   const { folderId } = req.params;
 
   if (!folderId) {
-    res.status(400).json({ message: "Bad Request, folder id required" });
+    res.status(400).json({ error: "Bad Request, folder id required" });
     return;
   }
 
   if (!folderName) {
-    res.status(400).json({ message: "Bad Request, new folder name required" });
+    res.status(400).json({ error: "Bad Request, new folder name required" });
     return;
   }
 
@@ -147,16 +145,14 @@ router.patch("/:folderId", async (req, res) => {
     );
 
     if (!updatedFolder) {
-      res.status(400).json({ message: "Bad Request, invalid folder" });
+      res.status(400).json({ error: "Bad Request, invalid folder" });
       return;
     }
 
     res.send(JSON.stringify(updatedFolder));
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error, Unable to rename" });
+    res.status(500).json({ error: "Internal Server Error, Unable to rename" });
   }
 });
 

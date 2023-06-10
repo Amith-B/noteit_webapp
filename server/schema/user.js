@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  name: String,
   email: { type: String, unique: true },
-  picture: String,
+  password: { type: String },
+  salt: { type: String },
   folders: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Folder", default: [] },
   ],

@@ -8,7 +8,7 @@ import downloadJSON from "../../utils/downloadNotes";
 import { getUrl } from "../../utils/api";
 
 export default function Menu({ open, onClose }) {
-  const { themes, activeTheme, setActiveTheme, setToken, profile } =
+  const { themes, activeTheme, setActiveTheme, setToken, email } =
     useContext(NotesContext);
 
   const handleFileChange = (e) => {
@@ -47,22 +47,12 @@ export default function Menu({ open, onClose }) {
           event.stopPropagation();
         }}
       >
-        {profile && profile.name && profile.email && (
+        {email && (
           <>
             <h4>Profile</h4>
             <hr />
             <div className="notes-menu-item menu flex-dir-col">
-              <div className="profile">
-                <img
-                  className="profile-img"
-                  alt="profile"
-                  src={profile.picture}
-                />
-                <div>
-                  <h5 className="profile-name">{profile.name}</h5>
-                  <h5 className="profile-email">{profile.email}</h5>
-                </div>
-              </div>
+              <h5 className="profile-email">{email}</h5>
               <button
                 className="menu-button clickable"
                 onClick={() => setToken(null)}
