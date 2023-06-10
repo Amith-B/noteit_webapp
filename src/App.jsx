@@ -1,3 +1,4 @@
+/* global google */
 import { useContext, useEffect, useRef } from "react";
 
 import Notes from "./components/Notes/Notes";
@@ -29,15 +30,15 @@ function App() {
   };
 
   useEffect(() => {
-    google.accounts.id.initialize({
-      client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-      callback: handleSignin,
-    });
+    google &&
+      google.accounts.id.initialize({
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+        callback: handleSignin,
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    /* global google */
     if (signInButton.current && google) {
       google.accounts.id.renderButton(signInButton.current, {
         theme: "outline",
