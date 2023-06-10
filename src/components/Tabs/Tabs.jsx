@@ -19,7 +19,7 @@ function Tabs({ onSidePanelToggle }) {
   const { activeFolder, closeTab, activeNoteId, setActiveNoteId, addNote } =
     useContext(NotesContext);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(document.body.clientWidth > 700);
   const tabGroup = useRef();
 
   useEffect(() => {
