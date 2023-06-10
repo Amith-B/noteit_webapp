@@ -47,7 +47,7 @@ export default function Menu({ open, onClose }) {
           event.stopPropagation();
         }}
       >
-        {profile.name && profile.email && (
+        {profile && profile.name && profile.email && (
           <>
             <h4>Profile</h4>
             <hr />
