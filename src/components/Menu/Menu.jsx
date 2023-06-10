@@ -3,6 +3,9 @@ import "./Menu.scss";
 import React, { useContext } from "react";
 
 import NotesContext from "../../context/notesContext";
+import axios from "axios";
+import downloadJSON from "../../utils/downloadNotes";
+import { getUrl } from "../../utils/api";
 
 export default function Menu({ open, onClose }) {
   const { themes, activeTheme, setActiveTheme, setToken, profile } =
@@ -11,19 +14,26 @@ export default function Menu({ open, onClose }) {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
-    reader.onload = handleFileRead;
+    reader.onload = handleFileRead(e);
     reader.readAsText(file);
   };
 
-  const handleFileRead = (e) => {
-    const content = e.target.result;
+  const handleFileRead = (fileEvent) => async (loadEvent) => {
+    const content = loadEvent.target.result;
     const jsonData = JSON.parse(content);
-    // handle uploading to server
-    // setFolders(jsonData);
+
+    fileEvent.target.value = null;
+    const response = (await axios.post(getUrl("notes/upload"), jsonData)).data;
+
+    if (response.uploaded) {
+      console.log("Upload complete", response.notes);
+    }
   };
 
-  const handleDownloadJson = () => {
-    // request all notes and convert it into json
+  const handleDownloadJson = async () => {
+    const notes = (await axios.get(getUrl("notes/getall"))).data;
+
+    downloadJSON(notes);
   };
 
   return (

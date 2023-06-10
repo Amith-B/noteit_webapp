@@ -4,22 +4,48 @@ const router = express.Router();
 // models
 const Folder = require("../schema/folder");
 const Note = require("../schema/notes");
+const User = require("../schema/user");
+
+router.get("/getall", async (req, res) => {
+  const { _id: userId } = res.locals.tokenData;
+
+  const notes = await User.findById(userId)
+    .select("folders activeFolder")
+    .populate({
+      path: "folders",
+      populate: { path: "notes" },
+    });
+
+  res.send(JSON.stringify(notes));
+});
+
+router.post("/upload", async (req, res) => {
+  const { _id: userId } = res.locals.tokenData;
+  const notes = req.body;
+
+  res.send(JSON.stringify({ uploaded: true, notes }));
+});
 
 router.get("/:noteId", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
   const { noteId } = req.params;
 
-  const notes = await Note.findOne({
-    _id: noteId,
-    userId,
-  });
+  try {
+    const notes = await Note.findOne({
+      _id: noteId,
+      userId,
+    });
+    if (!notes) {
+      res.status(400).json({ message: "Bad Request, invalid notes" });
+      return;
+    }
 
-  if (!notes) {
-    res.status(400).json({ message: "Bad Request, invalid notes" });
-    return;
+    res.send(JSON.stringify(notes));
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal server error, unable to fetch note" });
   }
-
-  res.send(JSON.stringify(notes));
 });
 
 router.delete("/:noteId", async (req, res) => {
@@ -60,22 +86,22 @@ router.post("/:folderId/add", async (req, res) => {
   const { title, content } = req.body;
   const { folderId } = req.params;
 
-  const folder = await Folder.findOne({ _id: folderId, userId });
-
-  if (!folder) {
-    res.status(400).json({ message: "Bad Request, invalid folder" });
-    return;
-  }
-
-  const newNote = await new Note({
-    title,
-    content,
-    userId,
-    folderId,
-  });
-  newNote.save();
-
   try {
+    const folder = await Folder.findOne({ _id: folderId, userId });
+
+    if (!folder) {
+      res.status(400).json({ message: "Bad Request, invalid folder" });
+      return;
+    }
+
+    const newNote = await new Note({
+      title,
+      content,
+      userId,
+      folderId,
+    });
+    newNote.save();
+
     await folder.updateOne({
       $push: { notes: newNote.id },
       $set: { activeNoteId: newNote.id },

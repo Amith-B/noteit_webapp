@@ -8,18 +8,24 @@ const User = require("../schema/user");
 router.get("/", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
 
-  const folderData = await User.findById(userId)
-    .select("folders activeFolder")
-    .populate({
-      path: "folders",
-      populate: { path: "notes", select: "_id" },
-    })
-    .populate({
-      path: "activeFolder",
-      populate: { path: "notes" },
-    });
+  try {
+    const folderData = await User.findById(userId)
+      .select("folders activeFolder")
+      .populate({
+        path: "folders",
+        populate: { path: "notes", select: "_id" },
+      })
+      .populate({
+        path: "activeFolder",
+        populate: { path: "notes" },
+      });
 
-  res.send(JSON.stringify(folderData));
+    res.send(JSON.stringify(folderData));
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal server error, unable to fetch folder" });
+  }
 });
 
 router.post("/", async (req, res) => {
@@ -31,17 +37,23 @@ router.post("/", async (req, res) => {
     return;
   }
 
-  const newFolder = await new Folder({
-    folderName,
-    userId,
-  });
-  newFolder.save();
+  try {
+    const newFolder = await new Folder({
+      folderName,
+      userId,
+    });
+    newFolder.save();
 
-  await User.findByIdAndUpdate(userId, {
-    $push: { folders: newFolder.id },
-  });
+    await User.findByIdAndUpdate(userId, {
+      $push: { folders: newFolder.id },
+    });
 
-  res.send(JSON.stringify(newFolder));
+    res.send(JSON.stringify(newFolder));
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal server error, unable to update folder" });
+  }
 });
 
 router.delete("/:folderId", async (req, res) => {
