@@ -1,4 +1,3 @@
-/*global chrome*/
 import "./Tabs.scss";
 
 import React, {
@@ -8,8 +7,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { downloadJSON, downloadXLSX } from "../../utils/downloadNotes";
 
+import Menu from "../Menu/Menu";
 import NotesContext from "../../context/notesContext";
 import SidePanel from "../SidePanel/SidePanel";
 import arrowLeft from "../../assets/arrow-previous-left.svg";
@@ -17,22 +16,10 @@ import hamburger from "../../assets/hamburger.svg";
 import verticalDot from "../../assets/vertical_dots.svg";
 
 function Tabs({ onSidePanelToggle }) {
-  const {
-    themes,
-    activeTheme,
-    setActiveTheme,
-    notes,
-    activeFolderId,
-    closeTab,
-    activeNoteId,
-    setActiveNoteId,
-    addNote,
-    setNotes,
-  } = useContext(NotesContext);
+  const { activeFolder, closeTab, activeNoteId, setActiveNoteId, addNote } =
+    useContext(NotesContext);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [maxLimit, setMaxLimit] = useState(0);
-  const [usedSpace, setUsedSpace] = useState(0);
+  const [panelOpen, setPanelOpen] = useState(document.body.clientWidth > 700);
   const tabGroup = useRef();
 
   useEffect(() => {
@@ -58,19 +45,8 @@ function Tabs({ onSidePanelToggle }) {
   );
 
   useEffect(() => {
-    if (chrome.storage && chrome.storage.local) {
-      chrome.storage.local.getBytesInUse().then((value) => {
-        setUsedSpace(value);
-      });
-    }
-  }, [notes]);
-
-  useEffect(() => {
     const tabRef = tabGroup.current;
     tabRef.addEventListener("wheel", handleHorizontalScroll);
-    if (chrome.storage && chrome.storage.local) {
-      setMaxLimit(chrome.storage.local.QUOTA_BYTES);
-    }
 
     return () => tabRef.removeEventListener("wheel", handleHorizontalScroll);
     // eslint-disable-next-line
@@ -78,7 +54,7 @@ function Tabs({ onSidePanelToggle }) {
 
   useEffect(() => {
     handleScroll();
-  }, [activeFolderId, activeNoteId]);
+  }, [activeFolder, activeNoteId]);
 
   const handleScroll = () => {
     const activeTab = document.querySelector(".tab.active");
@@ -86,27 +62,6 @@ function Tabs({ onSidePanelToggle }) {
     if (activeTab) {
       activeTab.scrollIntoView();
     }
-  };
-
-  const handleDownloadXlsx = () => {
-    downloadXLSX(notes);
-  };
-
-  const handleDownloadJson = () => {
-    downloadJSON(notes);
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = handleFileRead;
-    reader.readAsText(file);
-  };
-
-  const handleFileRead = (e) => {
-    const content = e.target.result;
-    const jsonData = JSON.parse(content);
-    setNotes(jsonData);
   };
 
   return (
@@ -124,20 +79,18 @@ function Tabs({ onSidePanelToggle }) {
       <div className="tab__controls">
         {" "}
         <div className="tab-group hide-scrollbar" ref={tabGroup}>
-          {activeFolderId &&
-            notes[activeFolderId]?.list?.map((note) => (
+          {activeFolder &&
+            activeFolder?.notes?.map((note) => (
               <button
                 className={
                   "tab " +
-                  (notes[activeFolderId].activeNoteId === note.id
+                  (activeFolder.activeNoteId === note._id
                     ? "active"
                     : "clickable")
                 }
-                key={note.id}
-                onClick={() => setActiveNoteId(activeFolderId, note.id)}
-                tabIndex={
-                  notes[activeFolderId].activeNoteId === note.id ? "-1" : "0"
-                }
+                key={note._id}
+                onClick={() => setActiveNoteId(activeFolder._id, note._id)}
+                tabIndex={activeFolder.activeNoteId === note._id ? "-1" : "0"}
               >
                 <div className="tab-title" title={note.title}>
                   {note.title}
@@ -146,7 +99,14 @@ function Tabs({ onSidePanelToggle }) {
                   className="clickable tab-close flex-center"
                   onClick={(event) => {
                     event.stopPropagation();
-                    closeTab(activeFolderId, note.id);
+
+                    if (
+                      window.confirm(
+                        "Are you sure you want to delete the notes? You will not be able to undo this action"
+                      )
+                    ) {
+                      closeTab(note._id);
+                    }
                   }}
                 >
                   +
@@ -154,7 +114,7 @@ function Tabs({ onSidePanelToggle }) {
               </button>
             ))}
         </div>
-        {activeFolderId && (
+        {activeFolder && (
           <button className="clickable tab-add flex-center" onClick={addNote}>
             +
           </button>
@@ -166,76 +126,7 @@ function Tabs({ onSidePanelToggle }) {
       >
         <img style={{ height: "16px" }} src={verticalDot} alt="3-dot" />
       </button>
-      <div
-        className={"notes-menu__overlay " + (menuOpen ? "visible" : "")}
-        onClick={() => setMenuOpen(false)}
-      >
-        <div
-          className="notes-menu"
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
-        >
-          <h4>Choose Theme</h4>
-          <hr />
-          {themes.map((theme) => (
-            <div
-              className={
-                "clickable notes-menu-item " +
-                (theme === activeTheme ? "active" : "")
-              }
-              key={theme}
-              onClick={() => {
-                setActiveTheme(theme);
-              }}
-            >
-              {theme.charAt(0).toUpperCase() + theme.slice(1)}
-            </div>
-          ))}
-          <hr />
-          <h4>Storage Used</h4>
-          <hr />
-          <span className="notes-menu-item">
-            <progress
-              style={{ width: "120px" }}
-              type="progress"
-              max={maxLimit}
-              value={usedSpace}
-            ></progress>
-          </span>
-          <hr />
-          <h4>Export As</h4>
-          <hr />
-          <div className="notes-menu-item export-import">
-            <button
-              className="export-import-button clickable"
-              onClick={handleDownloadXlsx}
-            >
-              .xlsx
-            </button>
-            <button
-              className="export-import-button clickable"
-              onClick={handleDownloadJson}
-            >
-              .json
-            </button>
-            <a id="downloadAnchorElem" style={{ display: "none" }} href="/#">
-              Download
-            </a>
-          </div>
-          <hr />
-          <h4>
-            Import From{" "}
-            <span style={{ padding: "0 6px" }} className="export-import-button">
-              .json
-            </span>
-          </h4>
-          <hr />
-          <div className="notes-menu-item export-import">
-            <input type="file" accept=".json" onChange={handleFileChange} />
-          </div>
-        </div>
-      </div>
+      <Menu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <SidePanel open={panelOpen} onClose={() => setPanelOpen(false)} />
     </section>
   );

@@ -1,8 +1,10 @@
-import { useContext, useState } from "react";
 import "./Notes.scss";
+
+import { useContext, useState } from "react";
+
+import NotesContext from "../../context/notesContext";
 import TabContent from "../TabContent/TabContent";
 import Tabs from "../Tabs/Tabs";
-import NotesContext from "../../context/notesContext";
 
 function Notes() {
   const { activeTheme, isSaved, activeNoteId } = useContext(NotesContext);
