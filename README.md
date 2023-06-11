@@ -1,6 +1,6 @@
 # This is a chrome extension to add notes, created using React
 
-![Screenshot](./docs/images/notes.jpg)
+![Screenshot](./client/docs/images/notes.jpg)
 
 ## Install Packages with: `npm install`
 
