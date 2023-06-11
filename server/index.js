@@ -10,12 +10,10 @@ require("dotenv").config();
 const port = process.env.PORT || 3001;
 const mongodbUrl = process.env.MONGODB_URL;
 
-// Require subroute files
 const signInRoutes = require("./routes/signin");
 const notesRoutes = require("./routes/notes");
 const folderRoutes = require("./routes/folder");
 
-// Middleware function
 const tokenVerificationMiddleware = (req, res, next) => {
   if (
     req.url.includes("/api/signin") &&
@@ -59,33 +57,28 @@ const tokenVerificationMiddleware = (req, res, next) => {
   }
 };
 
-// cors
 app.use(cors());
 
-// body parser
 app.use(bodyParser.json());
 
-// Use the middleware
+app.get("/status", (req, res) => res.send("Server active"));
+
 app.use(tokenVerificationMiddleware);
 
-// Use the subroutes
-// app.use('/', homeRoutes);
 app.use("/api/signin", signInRoutes);
 app.use("/api/notes", notesRoutes);
 app.use("/api/folder", folderRoutes);
 
-// Connect to MongoDB using Mongoose
 mongoose
   .connect(mongodbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("Connected to MongoDB");
 
-    // Start the server
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
   })
   .catch((error) => {
     console.error("Error connecting to MongoDB:", error);
-    process.exit(1); // Exit the application
+    process.exit(1);
   });
