@@ -252,11 +252,8 @@ export default function NotesProvider({ children }) {
       localStorage.setItem("auth_token", token);
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setIsLoading(true);
 
       fetchFolders();
-
-      setIsLoading(false);
     }, 200);
 
     return () => clearTimeout(timerRef);
@@ -265,11 +262,8 @@ export default function NotesProvider({ children }) {
   const verifyToken = async (verifyToken) => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${verifyToken}`;
 
-    setIsLoading(true);
-
     try {
       if (!verifyToken) {
-        setIsLoading(false);
         return;
       }
       const response = (await axios.get(getUrl("signin/verifytoken"))).data;
@@ -280,23 +274,25 @@ export default function NotesProvider({ children }) {
       if (!response.valid) {
         setToken(null);
       }
-
-      setIsLoading(false);
     } catch (error) {
       if (error?.response?.data?.code === "INCORRECT_TOKEN") {
         setToken(null);
       }
-      setIsLoading(false);
     }
   };
 
   const fetchFolders = async () => {
     setIsLoading(true);
-    const { folders, activeFolder } = (await axios.get(getUrl("folder"))).data;
+    try {
+      const { folders, activeFolder } = (await axios.get(getUrl("folder")))
+        .data;
 
-    setFolders(folders);
-    setActiveFolder(activeFolder);
-    setIsLoading(false);
+      setFolders(folders);
+      setActiveFolder(activeFolder);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
 
   return (
