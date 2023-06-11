@@ -1,4 +1,3 @@
-/*global chrome*/
 import { useEffect, useMemo, useState } from "react";
 
 import NotesContext from "./notesContext";
@@ -218,36 +217,27 @@ export default function NotesProvider({ children }) {
   );
 
   useEffect(() => {
-    chrome &&
-      chrome.storage &&
-      chrome.storage.local.set({ activeTheme: activeTheme }, function () {
-        console.log("Theme Changed");
-      });
+    localStorage.setItem("activeTheme", activeTheme);
   }, [activeTheme]);
 
   useEffect(() => {
-    if (chrome.storage) {
-      chrome.storage.local.get(["activeTheme"], function (result) {
-        if (result.activeTheme) {
-          setActiveTheme(result.activeTheme);
-        }
-      });
+    const activeTh = localStorage.getItem("activeTheme");
 
-      setIsLoading(true);
-      chrome.storage.local.get(["auth_token"], function (result) {
-        if (result.auth_token) {
-          setToken(result.auth_token);
-          verifyToken();
-        }
-      });
+    if (activeTh) {
+      setActiveTheme(activeTh);
+    }
+
+    const authToken = localStorage.getItem("auth_token");
+    if (authToken) {
+      setToken(authToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
+
+      verifyToken();
     }
   }, []);
 
   useEffect(() => {
-    chrome.storage &&
-      chrome.storage.local.set({ auth_token: token }, function () {
-        console.log("Token Updated");
-      });
+    localStorage.setItem("auth_token", token);
 
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     if (!token) {
@@ -261,10 +251,18 @@ export default function NotesProvider({ children }) {
   }, [token]);
 
   const verifyToken = async () => {
-    const response = (await axios.get(getUrl("signin/verifytoken"))).data;
+    setIsLoading(true);
 
-    if (!response.valid) {
-      setToken(null);
+    try {
+      const response = (await axios.get(getUrl("signin/verifytoken"))).data;
+
+      if (!response.valid) {
+        setToken(null);
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
     }
   };
 

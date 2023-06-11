@@ -17,7 +17,10 @@ const folderRoutes = require("./routes/folder");
 
 // Middleware function
 const tokenVerificationMiddleware = (req, res, next) => {
-  if (req.url.includes("/api/signin")) {
+  if (
+    req.url.includes("/api/signin") &&
+    !req.url.includes("/api/signin/verifytoken")
+  ) {
     next();
   } else {
     try {
