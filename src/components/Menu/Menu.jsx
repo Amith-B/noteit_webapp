@@ -69,7 +69,11 @@ export default function Menu({ open, onClose }) {
               <h5 className="profile-email">{email}</h5>
               <button
                 className="menu-button clickable"
-                onClick={() => setToken(null)}
+                onClick={() => {
+                  setToken(null);
+                  setFolders([]);
+                  setActiveFolder(null);
+                }}
               >
                 Sign out
               </button>

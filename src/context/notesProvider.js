@@ -236,20 +236,22 @@ export default function NotesProvider({ children }) {
     const authToken = localStorage.getItem("auth_token");
     if (authToken) {
       setToken(authToken);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
 
-      verifyToken();
+      verifyToken(authToken);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const timerRef = setTimeout(() => {
+      if (!token) {
+        localStorage.removeItem("auth_token");
+        return;
+      }
+
       localStorage.setItem("auth_token", token);
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      if (!token) {
-        return;
-      }
       setIsLoading(true);
 
       fetchFolders();
@@ -260,10 +262,16 @@ export default function NotesProvider({ children }) {
     return () => clearTimeout(timerRef);
   }, [token]);
 
-  const verifyToken = async () => {
+  const verifyToken = async (verifyToken) => {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${verifyToken}`;
+
     setIsLoading(true);
 
     try {
+      if (!verifyToken) {
+        setIsLoading(false);
+        return;
+      }
       const response = (await axios.get(getUrl("signin/verifytoken"))).data;
 
       if (response.email) {
@@ -275,6 +283,9 @@ export default function NotesProvider({ children }) {
 
       setIsLoading(false);
     } catch (error) {
+      if (error?.response?.data?.code === "INCORRECT_TOKEN") {
+        setToken(null);
+      }
       setIsLoading(false);
     }
   };

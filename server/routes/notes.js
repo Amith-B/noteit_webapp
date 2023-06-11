@@ -8,6 +8,7 @@ const Note = require("../schema/notes");
 const User = require("../schema/user");
 
 const verifyNotes = require("../utils/verifyNotes");
+const { encrypt, decrypt } = require("../utils/encrypt");
 
 router.get("/getall", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
@@ -45,9 +46,12 @@ router.post("/upload", async (req, res) => {
       await newFolder.save({ session });
 
       for (const { title, content, _id } of folder.notes) {
+        const { iv, encryptedData } = encrypt(content);
+
         const newNote = await new Note({
           title,
-          content,
+          content: encryptedData,
+          iv,
           userId,
           folderId: newFolder._id,
         });
@@ -96,33 +100,24 @@ router.post("/upload", async (req, res) => {
         populate: { path: "notes" },
       });
 
-    res.send(JSON.stringify(folderData));
+    const decryptedData = {
+      ...folderData.toJSON(),
+    };
+
+    if (decryptedData.activeFolder) {
+      decryptedData.activeFolder.notes = decryptedData.activeFolder.notes.map(
+        (note) => ({
+          ...note,
+          content: decrypt(note.content, note.iv),
+        })
+      );
+    }
+
+    res.send(JSON.stringify(decryptedData));
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
     res.status(500).json({ error: "Upload failed", code: "UPLOAD_FAILED" });
-  }
-});
-
-router.get("/:noteId", async (req, res) => {
-  const { _id: userId } = res.locals.tokenData;
-  const { noteId } = req.params;
-
-  try {
-    const notes = await Note.findOne({
-      _id: noteId,
-      userId,
-    });
-    if (!notes) {
-      res.status(400).json({ error: "Bad Request, invalid notes" });
-      return;
-    }
-
-    res.send(JSON.stringify(notes));
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Internal server error, unable to fetch note" });
   }
 });
 
@@ -170,9 +165,12 @@ router.post("/:folderId/add", async (req, res) => {
       return;
     }
 
+    const { iv, encryptedData } = encrypt(content);
+
     const newNote = await new Note({
       title,
-      content,
+      content: encryptedData,
+      iv,
       userId,
       folderId,
     });
@@ -235,10 +233,12 @@ router.patch("/:noteId", async (req, res) => {
   }
 
   try {
+    const { iv, encryptedData } = encrypt(content);
+
     const updatedNote = await Note.findOneAndUpdate(
       { _id: noteId, userId },
       {
-        $set: { title, content },
+        $set: { title, iv, content: encryptedData },
       },
       { new: true }
     );

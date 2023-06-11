@@ -4,6 +4,7 @@ const router = express.Router();
 // model
 const Folder = require("../schema/folder");
 const User = require("../schema/user");
+const { decrypt } = require("../utils/encrypt");
 
 router.get("/", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
@@ -20,7 +21,20 @@ router.get("/", async (req, res) => {
         populate: { path: "notes" },
       });
 
-    res.send(JSON.stringify(folderData));
+    const decryptedData = {
+      ...folderData.toJSON(),
+    };
+
+    if (decryptedData.activeFolder) {
+      decryptedData.activeFolder.notes = decryptedData.activeFolder.notes.map(
+        (note) => ({
+          ...note,
+          content: decrypt(note.content, note.iv),
+        })
+      );
+    }
+
+    res.send(JSON.stringify(decryptedData));
   } catch (error) {
     res
       .status(500)
@@ -111,7 +125,16 @@ router.patch("/activefolder", async (req, res) => {
       $set: { activeFolder: folder._id },
     });
 
-    res.send(JSON.stringify(folder));
+    const decryptedData = {
+      ...folder.toJSON(),
+    };
+
+    decryptedData.notes = decryptedData.notes.map((note) => ({
+      ...note,
+      content: decrypt(note.content, note.iv),
+    }));
+
+    res.send(JSON.stringify(decryptedData));
   } catch (error) {
     console.error(error);
     res

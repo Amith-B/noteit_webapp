@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const noteSchema = new mongoose.Schema({
   content: String,
+  iv: String,
   folderId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Folder",
