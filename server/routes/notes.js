@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 
 // models
 const Folder = require("../schema/folder");
 const Note = require("../schema/notes");
 const User = require("../schema/user");
+
+const verifyNotes = require("../utils/verifyNotes");
 
 router.get("/getall", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
@@ -23,9 +26,82 @@ router.post("/upload", async (req, res) => {
   const { _id: userId } = res.locals.tokenData;
   const notes = req.body;
 
-  // TODO: handle upload with verification
+  const valid = verifyNotes(notes);
 
-  res.send(JSON.stringify({ uploaded: true, notes }));
+  if (!valid) {
+    res.status(400).json({ error: "Invalid json", code: "INVALID_JSON" });
+    return;
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    for (const folder of notes.folders) {
+      const newFolder = await new Folder({
+        folderName: folder.folderName,
+        userId,
+      });
+
+      await newFolder.save({ session });
+
+      for (const { title, content, _id } of folder.notes) {
+        const newNote = await new Note({
+          title,
+          content,
+          userId,
+          folderId: newFolder._id,
+        });
+        await newNote.save({ session });
+
+        await newFolder.updateOne(
+          {
+            $push: { notes: newNote.id },
+            ...(_id === folder.activeNoteId && {
+              $set: { activeNoteId: newNote.id },
+            }),
+          },
+          { session }
+        );
+      }
+
+      await User.findByIdAndUpdate(
+        userId,
+        {
+          $push: { folders: newFolder.id },
+        },
+        { session }
+      );
+
+      if (notes.activeFolder === folder._id) {
+        await User.findByIdAndUpdate(
+          userId,
+          {
+            $set: { activeFolder: newFolder._id },
+          },
+          { session }
+        );
+      }
+    }
+
+    await session.commitTransaction();
+
+    const folderData = await User.findById(userId)
+      .select("folders activeFolder")
+      .populate({
+        path: "folders",
+        populate: { path: "notes", select: "_id" },
+      })
+      .populate({
+        path: "activeFolder",
+        populate: { path: "notes" },
+      });
+
+    res.send(JSON.stringify(folderData));
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    res.status(500).json({ error: "Upload failed", code: "UPLOAD_FAILED" });
+  }
 });
 
 router.get("/:noteId", async (req, res) => {

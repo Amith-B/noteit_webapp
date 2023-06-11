@@ -8,8 +8,16 @@ import downloadJSON from "../../utils/downloadNotes";
 import { getUrl } from "../../utils/api";
 
 export default function Menu({ open, onClose }) {
-  const { themes, activeTheme, setActiveTheme, setToken, email } =
-    useContext(NotesContext);
+  const {
+    themes,
+    activeTheme,
+    setActiveTheme,
+    setToken,
+    email,
+    setIsLoading,
+    setFolders,
+    setActiveFolder,
+  } = useContext(NotesContext);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -23,10 +31,16 @@ export default function Menu({ open, onClose }) {
     const jsonData = JSON.parse(content);
 
     fileEvent.target.value = null;
-    const response = (await axios.post(getUrl("notes/upload"), jsonData)).data;
+    setIsLoading(true);
+    try {
+      const response = (await axios.post(getUrl("notes/upload"), jsonData))
+        .data;
 
-    if (response.uploaded) {
-      console.log("Upload complete", response.notes);
+      setFolders(response.folders);
+      setActiveFolder(response.activeFolder);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
     }
   };
 
@@ -95,10 +109,7 @@ export default function Menu({ open, onClose }) {
         </div>
         <hr />
         <h4>
-          Import From{" "}
-          <span style={{ padding: "0 6px" }} className="menu-button">
-            .json
-          </span>
+          Import From <code>.json</code>
         </h4>
         <hr />
         <div className="notes-menu-item menu">
