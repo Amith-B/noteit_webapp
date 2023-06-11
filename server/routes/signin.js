@@ -96,7 +96,14 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/verifytoken", (req, res) => {
-  const tokenData = res.locals.tokenData;
+  const auth = req.headers.authorization;
+  if (!auth) {
+    res.status(401).json({ error: "Unauthorised" });
+    return;
+  }
+
+  const authToken = auth.replace("Bearer ", "");
+  const tokenData = jwt.decode(authToken);
 
   const expiration = new Date(tokenData.exp * 1000);
   const currentTime = new Date();
