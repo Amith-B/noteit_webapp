@@ -44,5 +44,8 @@
   "devDependencies": {
     "nodemon": "^2.0.22",
     "sass": "^1.53.0"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }
