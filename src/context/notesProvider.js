@@ -217,7 +217,13 @@ export default function NotesProvider({ children }) {
   );
 
   useEffect(() => {
-    localStorage.setItem("activeTheme", activeTheme);
+    const timerRef = setTimeout(() => {
+      if (activeTheme) {
+        localStorage.setItem("activeTheme", activeTheme);
+      }
+    }, 200);
+
+    return () => clearTimeout(timerRef);
   }, [activeTheme]);
 
   useEffect(() => {
@@ -237,17 +243,21 @@ export default function NotesProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("auth_token", token);
+    const timerRef = setTimeout(() => {
+      localStorage.setItem("auth_token", token);
 
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    if (!token) {
-      return;
-    }
-    setIsLoading(true);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      if (!token) {
+        return;
+      }
+      setIsLoading(true);
 
-    fetchFolders();
+      fetchFolders();
 
-    setIsLoading(false);
+      setIsLoading(false);
+    }, 200);
+
+    return () => clearTimeout(timerRef);
   }, [token]);
 
   const verifyToken = async () => {
