@@ -303,6 +303,7 @@ export default function NotesProvider({ children }) {
         setToken,
         email,
         setEmail,
+        setIsLoading,
       }}
     >
       {children}

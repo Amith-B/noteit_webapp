@@ -23,4 +23,14 @@
   padding: 0.5rem 1rem;
   background: #ffc251;
   border-radius: 0.5rem;
+  cursor: pointer;
+  opacity: 0.9;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.error-message {
+  color: #ffc4c4;
+  margin-top: 1rem;
 }
