@@ -74,6 +74,8 @@ app.use("/api/signin", signInRoutes);
 app.use("/api/notes", notesRoutes);
 app.use("/api/folder", folderRoutes);
 
+app.get("/", (req, res) => [res.send("Server active")]);
+
 // Connect to MongoDB using Mongoose
 mongoose
   .connect(mongodbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
