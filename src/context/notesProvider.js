@@ -266,6 +266,9 @@ export default function NotesProvider({ children }) {
     try {
       const response = (await axios.get(getUrl("signin/verifytoken"))).data;
 
+      if (response.email) {
+        setEmail(response.email);
+      }
       if (!response.valid) {
         setToken(null);
       }

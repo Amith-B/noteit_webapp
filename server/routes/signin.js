@@ -104,7 +104,7 @@ router.get("/verifytoken", (req, res) => {
 
   const diff = (expiration.getTime() - currentTime.getTime()) / 1000;
 
-  res.status(200).json({ valid: diff > 60 });
+  res.status(200).json({ valid: diff > 60, email: tokenData.email });
 });
 
 module.exports = router;
