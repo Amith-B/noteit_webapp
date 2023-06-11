@@ -1,10 +1,17 @@
+import { useContext, useEffect } from "react";
+
 import Notes from "./components/Notes/Notes";
 import NotesContext from "./context/notesContext";
 import Signin from "./components/Signin/Signin";
-import { useContext } from "react";
 
 function App() {
   const { token, isLoading } = useContext(NotesContext);
+
+  useEffect(() => {
+    if (window?.chrome?.extension) {
+      document.body.classList.add("chrom-extension");
+    }
+  }, []);
 
   return (
     <div className="App">

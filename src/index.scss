@@ -62,10 +62,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 800px;
-  height: 500px;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   transform: scale(1); // to make all children relative to body
+  &.chrom-extension {
+    width: 800px;
+    height: 500px;
+  }
 }
 
 #root,
