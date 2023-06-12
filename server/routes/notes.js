@@ -181,7 +181,7 @@ router.post("/:folderId/add", async (req, res) => {
       $set: { activeNoteId: newNote.id },
     });
 
-    res.send(JSON.stringify(newNote));
+    res.send(JSON.stringify({ ...newNote.toJSON(), content }));
   } catch (error) {
     console.error(error);
     res
