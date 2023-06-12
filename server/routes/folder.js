@@ -11,15 +11,12 @@ router.get("/", async (req, res) => {
 
   try {
     const folderData = await User.findById(userId)
-      .select("folders activeFolder")
-      .populate({
-        path: "folders",
-        populate: { path: "notes", select: "_id" },
-      })
+      .populate("folders")
       .populate({
         path: "activeFolder",
         populate: { path: "notes" },
-      });
+      })
+      .select("folders activeFolder");
 
     const decryptedData = {
       ...folderData.toJSON(),
