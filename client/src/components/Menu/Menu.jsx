@@ -83,20 +83,31 @@ export default function Menu({ open, onClose }) {
         )}
         <h4>Choose Theme</h4>
         <hr />
-        {themes.map((theme) => (
-          <div
-            className={
-              "clickable notes-menu-item " +
-              (theme === activeTheme ? "active" : "")
-            }
-            key={theme}
-            onClick={() => {
-              setActiveTheme(theme);
-            }}
-          >
-            {theme.charAt(0).toUpperCase() + theme.slice(1)}
-          </div>
-        ))}
+
+        <div className="notes-menu-item color-palette-list">
+          {Object.keys(themes).map((theme) => (
+            <div
+              className={
+                "color-palette clickable " +
+                (activeTheme === theme ? "active" : "")
+              }
+              key={theme}
+              onClick={() => {
+                setActiveTheme(theme);
+              }}
+            >
+              <div
+                className="color-slice"
+                style={{ background: themes[theme].secondary }}
+              ></div>
+              <div
+                className="color-slice"
+                style={{ background: themes[theme].primary }}
+              ></div>
+            </div>
+          ))}
+        </div>
+
         <hr />
         <h4>Export As</h4>
         <hr />

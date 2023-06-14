@@ -61,3 +61,26 @@
     color: var(--text-color);
   }
 }
+
+.color-palette-list {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.color-palette {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--text-color);
+  &.active {
+    box-shadow: 0 0 0px 2px var(--text-color);
+  }
+}
+
+.color-slice {
+  width: 10px;
+  height: 20px;
+}
