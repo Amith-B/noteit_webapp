@@ -7,8 +7,8 @@ const initialData = {
       secondary: "#4b9fc9",
     },
     purple: {
-      primary: "#e8e8e8",
-      secondary: "#4b9fc9",
+      primary: "#a48ab5",
+      secondary: "#7f6da8",
     },
     brown: {
       primary: "#e4ba9f",
