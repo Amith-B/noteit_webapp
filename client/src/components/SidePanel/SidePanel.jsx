@@ -3,6 +3,7 @@ import "./SidePanel.scss";
 import React, { useContext, useState } from "react";
 
 import NotesContext from "../../context/notesContext";
+import arrowLeft from "../../assets/arrow-previous-left.svg";
 import edit from "../../assets/edit.svg";
 
 function SidePanel({ open, onClose }) {
@@ -25,24 +26,34 @@ function SidePanel({ open, onClose }) {
   };
 
   return (
-    <div
-      className={"sidepanel__container " + (open ? "visible" : "")}
-      onClick={onClose}
-    >
+    <div className={"sidepanel__container " + (open ? "visible" : "")}>
       <section
         className="sidepanel"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="panel-item header">
-          <h3>Folders</h3>
-          <button
-            className="clickable folder-add flex-center"
-            onClick={addFolder}
-          >
-            +
-          </button>
+          <h3>
+            Folders{" "}
+            <div className="folder-notes-count flex-center">
+              {folders.length}
+            </div>
+          </h3>
+          <div className="header-options">
+            <button
+              className="clickable folder-add flex-center"
+              onClick={addFolder}
+            >
+              +
+            </button>
+            <button
+              className="clickable notes-panel__toggle flex-center"
+              onClick={onClose}
+            >
+              <img style={{ height: "16px" }} src={arrowLeft} alt="3-dot" />
+            </button>
+          </div>
         </div>
-        <div className="folder-list">
+        <div className="folder-list hide-scrollbar">
           {folders.map((folder) => {
             return (
               <div className="panel-item" key={folder._id}>

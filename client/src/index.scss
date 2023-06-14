@@ -194,3 +194,27 @@ button {
     height: 32px;
   }
 }
+
+.notes {
+  &-menu__toggle,
+  &-panel__toggle {
+    background-color: var(--tab-theme-bg);
+    height: 30px;
+    align-self: center;
+    border-radius: 4px;
+    transform: translateY(-2px);
+    filter: var(--icon-filter);
+    background-color: transparent;
+    padding: 0 4px;
+    padding-left: 10px;
+  }
+  &-panel__toggle {
+    padding-left: 0;
+  }
+  &-menu__toggle:hover::after {
+    background-color: var(--tab-inactive-bg);
+    border-radius: 4px;
+    opacity: 0.6;
+    color: unset;
+  }
+}

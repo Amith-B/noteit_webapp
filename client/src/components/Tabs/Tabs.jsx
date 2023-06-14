@@ -11,7 +11,6 @@ import React, {
 import Menu from "../Menu/Menu";
 import NotesContext from "../../context/notesContext";
 import SidePanel from "../SidePanel/SidePanel";
-import arrowLeft from "../../assets/arrow-previous-left.svg";
 import hamburger from "../../assets/hamburger.svg";
 import verticalDot from "../../assets/vertical_dots.svg";
 
@@ -68,13 +67,10 @@ function Tabs({ onSidePanelToggle }) {
     <section className="tab__container">
       <button
         className="clickable notes-panel__toggle flex-center"
+        style={{ display: panelOpen ? "none" : "block" }}
         onClick={() => setPanelOpen((toggle) => !toggle)}
       >
-        <img
-          style={{ height: "16px" }}
-          src={panelOpen ? arrowLeft : hamburger}
-          alt="3-dot"
-        />
+        <img style={{ height: "16px" }} src={hamburger} alt="3-dot" />
       </button>
       <div className="tab__controls">
         {" "}
