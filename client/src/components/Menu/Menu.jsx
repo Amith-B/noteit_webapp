@@ -85,7 +85,7 @@ export default function Menu({ open, onClose }) {
         <hr />
 
         <div className="notes-menu-item color-palette-list">
-          {Object.keys(themes).map((theme) => (
+          {themes.map((theme) => (
             <div
               className={
                 "color-palette clickable " +
@@ -96,14 +96,8 @@ export default function Menu({ open, onClose }) {
                 setActiveTheme(theme);
               }}
             >
-              <div
-                className="color-slice"
-                style={{ background: themes[theme].secondary }}
-              ></div>
-              <div
-                className="color-slice"
-                style={{ background: themes[theme].primary }}
-              ></div>
+              <div className={"color-slice secondary theme " + theme}></div>
+              <div className={"color-slice primary theme " + theme}></div>
             </div>
           ))}
         </div>

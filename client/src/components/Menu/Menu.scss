@@ -83,4 +83,12 @@
 .color-slice {
   width: 10px;
   height: 20px;
+
+  &.primary {
+    background-color: var(--primary-bg);
+  }
+
+  &.secondary {
+    background-color: var(--tab-theme-bg);
+  }
 }
