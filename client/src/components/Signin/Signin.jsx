@@ -47,6 +47,7 @@ export default function Signin() {
         <input
           type="email"
           id="email"
+          placeholder="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           onKeyDown={(event) => event.key === "Enter" && handleSignin()}
@@ -54,12 +55,17 @@ export default function Signin() {
         <input
           type="password"
           id="password"
+          placeholder="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           onKeyDown={(event) => event.key === "Enter" && handleSignin()}
         />
       </section>
-      <p className="error-message">{errorMessage}</p>
+      <p className="sign-in-note">
+        <b>Note:</b> If given email is not registered, then that email will be
+        created with the given password
+      </p>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
       <button className="sign-in-submit-button" onClick={handleSignin}>
         Submit
       </button>
