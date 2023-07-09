@@ -14,6 +14,7 @@ const mongodbUrl = process.env.MONGODB_URL;
 const signInRoutes = require("./routes/signin");
 const notesRoutes = require("./routes/notes");
 const folderRoutes = require("./routes/folder");
+const verifyEmailRoutes = require("./routes/verifyEmail");
 
 const tokenVerificationMiddleware = (req, res, next) => {
   try {
@@ -54,6 +55,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.get("/status", (req, res) => res.send("Server active"));
+app.use("/verifyemail", verifyEmailRoutes);
 
 app.use("/api/signin", signInRoutes);
 app.use("/api/notes", tokenVerificationMiddleware, notesRoutes);
