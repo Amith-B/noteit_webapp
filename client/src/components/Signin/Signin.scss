@@ -16,18 +16,36 @@
   }
 }
 
-.sign-in-submit-button {
+.sign-in-cta-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+
+  button {
+    width: 100%;
+  }
+}
+
+.sign-in-submit-button,
+.sign-in-forgot-button {
   margin-top: 1rem;
   border: none;
   outline: none;
   padding: 0.5rem 1rem;
-  background: #ffc251;
   border-radius: 0.5rem;
   cursor: pointer;
   opacity: 0.9;
   &:hover {
     opacity: 1;
   }
+}
+
+.sign-in-submit-button {
+  background: #92c5fe;
+}
+
+.sign-in-forgot-button {
+  background: #ffcf77;
 }
 
 .error-message {

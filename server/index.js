@@ -11,6 +11,7 @@ require("dotenv").config();
 const port = process.env.PORT || 3001;
 const mongodbUrl = process.env.MONGODB_URL;
 
+const resetRoutes = require("./routes/reset");
 const signInRoutes = require("./routes/signin");
 const notesRoutes = require("./routes/notes");
 const folderRoutes = require("./routes/folder");
@@ -52,10 +53,12 @@ const tokenVerificationMiddleware = (req, res, next) => {
 
 app.use(cors());
 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get("/status", (req, res) => res.send("Server active"));
 app.use("/verifyemail", verifyEmailRoutes);
+app.use("/resetpassword", resetRoutes);
 
 app.use("/api/signin", signInRoutes);
 app.use("/api/notes", tokenVerificationMiddleware, notesRoutes);

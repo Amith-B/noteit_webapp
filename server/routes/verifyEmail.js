@@ -1,24 +1,45 @@
 const express = require("express");
+const { sendForgotPasswordMail } = require("../utils/sendMail");
 const router = express.Router();
 
-router.patch("/:token", async (req, res) => {
+// models
+const VerifyUser = require("../schema/userVerify");
+const User = require("../schema/user");
+
+router.get("/:token", async (req, res) => {
   const { token } = req.params;
 
-  if (!token) {
-    res
-      .status(400)
-      .json({ error: "Bad Request, verification token not speicified" });
-    return;
-  }
+  try {
+    const user = await VerifyUser.findOne({
+      verifyToken: token,
+    });
 
-  const transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-      user: process.env.NODE_MAILER_USER,
-      pass: process.env.NODE_MAILER_PASS,
-    },
-  });
+    if (!user) {
+      res.send("<h3>Verification link expired</h3>");
+      return;
+    }
+
+    const verifiedUser = user.toJSON();
+
+    if (!verifiedUser.forgotPassword) {
+      const confirmedUser = new User({
+        email: verifiedUser.email,
+        password: verifiedUser.password,
+        salt: verifiedUser.salt,
+      });
+
+      await confirmedUser.save();
+
+      await user.deleteOne();
+
+      res.send(`
+      <h3>Email verified successfully</h3><br/>
+      <a target="__self" href=${process.env.HOST_URL}>Login</a>
+      `);
+    }
+  } catch (error) {
+    res.send("<h3>Unable to verify email</h3>");
+  }
 });
 
 module.exports = router;
