@@ -2,9 +2,16 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { generateToken } = require("../utils/generateToken");
+const {
+  sendEmailVerifyMail,
+  sendForgotPasswordMail,
+} = require("../utils/sendMail");
+const { hashPassword } = require("../utils/hashPassword");
 
 // user model
 const User = require("../schema/user");
+const VerifyUser = require("../schema/userVerify");
 
 // const googleApiUrl = process.env.GOOGLE_API_URL;
 
@@ -49,50 +56,100 @@ const User = require("../schema/user");
 //     });
 // });
 
-const saltRounds = 10;
-const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(saltRounds);
-
-  // Hash the password with the salt
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  return { hashedPassword, salt };
-};
-
 router.post("/", async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-  let payload = user && user.toJSON();
 
-  if (!user) {
-    const { hashedPassword, salt } = await hashPassword(password);
-    const newUser = new User({
-      email,
-      password: hashedPassword,
-      salt,
-    });
-    payload = (await newUser.save()).toJSON();
-  } else {
+  if (user) {
+    const payload = user && user.toJSON();
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       res.status(401).json({ error: "Wrong password", code: "WRONG_PASSWORD" });
       return;
     }
+
+    const jwtToken = jwt.sign(
+      {
+        email: payload.email,
+        _id: payload._id,
+      },
+      process.env.TOKEN_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.send(JSON.stringify({ token: jwtToken, email: payload.email }));
+
+    return;
   }
 
-  const jwtToken = jwt.sign(
-    {
-      email: payload.email,
-      _id: payload._id,
-    },
-    process.env.TOKEN_SECRET,
-    {
-      expiresIn: "7d",
-    }
-  );
+  const { hashedPassword, salt } = await hashPassword(password);
+  const alreadyPresentUser = VerifyUser.findOne({ email });
+  if (alreadyPresentUser) {
+    await alreadyPresentUser.deleteOne();
+  }
+  const verifyToken = await generateToken(16);
 
-  res.send(JSON.stringify({ token: jwtToken, email: payload.email }));
+  const newUser = new VerifyUser({
+    email,
+    password: hashedPassword,
+    salt,
+    verifyToken,
+  });
+  await newUser.save();
+
+  await sendEmailVerifyMail(email, verifyToken);
+
+  res.send(
+    JSON.stringify({
+      customMessage: true,
+      message:
+        "Verification mail sent to your mail id, please verify before signing in. Link valid for 10mins",
+    })
+  );
+});
+
+router.post("/forgotpassword", async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (user) {
+    const alreadyPresentUser = VerifyUser.findOne({ email });
+    if (alreadyPresentUser) {
+      await alreadyPresentUser.deleteOne();
+    }
+
+    const verifyToken = await generateToken(16);
+
+    const existingUser = new VerifyUser({
+      email: user.email,
+      password: user.password,
+      salt: user.salt,
+      verifyToken,
+      forgotPassword: true,
+    });
+    await existingUser.save();
+
+    await sendForgotPasswordMail(email, verifyToken);
+
+    res.send(
+      JSON.stringify({
+        customMessage: true,
+        message:
+          "Verification mail sent to your mail id, please verify and reset the password. Link valid for 10mins",
+      })
+    );
+  } else {
+    res.send(
+      JSON.stringify({
+        customMessage: true,
+        message: "Email id not registered, please register it first",
+      })
+    );
+  }
 });
 
 router.get("/verifytoken", (req, res) => {

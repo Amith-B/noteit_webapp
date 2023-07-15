@@ -16,16 +16,22 @@ export default function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSignin = async () => {
     if (email && password) {
       setIsLoading(true);
-      setErrorMessage("");
+      setMessage("");
       try {
         const response = (
           await axios.post(getUrl("signin"), { email, password })
         ).data;
+
+        if (response.customMessage) {
+          setMessage(response.message);
+          setIsLoading(false);
+          return;
+        }
 
         setToken(response.token);
         setProfileEmail(response.email);
@@ -34,8 +40,28 @@ export default function Signin() {
         setIsLoading(false);
 
         if (error?.response?.data?.code === "WRONG_PASSWORD") {
-          setErrorMessage("Wrong password");
+          setMessage("Wrong password");
         }
+      }
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (email) {
+      setIsLoading(true);
+      setMessage("");
+      try {
+        const response = (
+          await axios.post(getUrl("signin/forgotpassword"), { email })
+        ).data;
+
+        if (response.customMessage) {
+          setMessage(response.message);
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
       }
     }
   };
@@ -65,10 +91,18 @@ export default function Signin() {
         <b>Note:</b> If given email is not registered, then that email will be
         created with the given password
       </p>
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
-      <button className="sign-in-submit-button" onClick={handleSignin}>
-        Submit
-      </button>
+      {message && <p className="error-message">{message}</p>}
+      <div className="sign-in-cta-group">
+        <button className="sign-in-submit-button" onClick={handleSignin}>
+          Submit
+        </button>
+        <button
+          className="sign-in-forgot-button"
+          onClick={handleForgotPassword}
+        >
+          Fogot password
+        </button>
+      </div>
     </>
   );
 }
