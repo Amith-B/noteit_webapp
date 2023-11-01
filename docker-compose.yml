@@ -18,6 +18,19 @@ services:
       - ${PWD}/server:/app
       - /app/node_modules
     restart: unless-stopped
+    networks:
+      - mongo_network
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URL=mongodb://root:password@mongo:27017/
+      - TOKEN_SECRET=72b70c6bb49cc63431de619d81c6f0db98d6b8d5eda45236
+      - DATA_ENCRYPTION_KEY=701fac1c6d56315c6f77fedaaf139f1311717143f9c34e43
+      - CREATE_USER_WITHOUT_EMAIL_VERIFICATION=1
+      - NODE_MAILER_USER=some_email@gmail.com
+      - NODE_MAILER_PASS=email_password
+
+    # CREATE_USER_WITHOUT_EMAIL_VERIFICATION=1 -> this is just for running and testing the app locally
 
   client:
     container_name: noteit-client
@@ -30,5 +43,20 @@ services:
       context: ./client
       # dockerfile: ./client.Dockerfile
     restart: unless-stopped
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:3001/
     depends_on:
       - server
+
+  mongo:
+    image: mongo
+    container_name: noteit-mongodb-database
+    restart: unless-stopped
+    networks:
+      - mongo_network
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+networks:
+  mongo_network:
