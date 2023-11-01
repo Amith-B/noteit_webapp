@@ -13,6 +13,9 @@ const { hashPassword } = require("../utils/hashPassword");
 const User = require("../schema/user");
 const VerifyUser = require("../schema/userVerify");
 
+const createUserWithoutVerification =
+  process.env.CREATE_USER_WITHOUT_EMAIL_VERIFICATION === "1";
+
 // const googleApiUrl = process.env.GOOGLE_API_URL;
 
 // router.get("/", (req, res) => {
@@ -92,23 +95,40 @@ router.post("/", async (req, res) => {
   }
   const verifyToken = await generateToken(16);
 
-  const newUser = new VerifyUser({
-    email,
-    password: hashedPassword,
-    salt,
-    verifyToken,
-  });
-  await newUser.save();
+  if (createUserWithoutVerification) {
+    const newUser = new User({
+      email,
+      password: hashedPassword,
+      salt,
+    });
 
-  await sendEmailVerifyMail(email, verifyToken);
+    await newUser.save();
 
-  res.send(
-    JSON.stringify({
-      customMessage: true,
-      message:
-        "Verification mail sent to your mail id, please verify before signing in. Link valid for 10mins",
-    })
-  );
+    res.send(
+      JSON.stringify({
+        customMessage: true,
+        message: "User created successfully, login again with same password",
+      })
+    );
+  } else {
+    const newUser = new VerifyUser({
+      email,
+      password: hashedPassword,
+      salt,
+      verifyToken,
+    });
+    await newUser.save();
+
+    await sendEmailVerifyMail(email, verifyToken);
+
+    res.send(
+      JSON.stringify({
+        customMessage: true,
+        message:
+          "Verification mail sent to your mail id, please verify before signing in. Link valid for 10mins",
+      })
+    );
+  }
 });
 
 router.post("/forgotpassword", async (req, res) => {
