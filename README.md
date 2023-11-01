@@ -29,3 +29,11 @@ This will generate the build in `server/build` folder.
 ## Random key generation
 
 `openssl rand -hex 24`
+
+## To run with Docker
+
+Docker desktop should be installed before running below commands
+
+1.`docker-componse up -d` - to start the containers in detached mode, this will start both client and the server in two different containers, once started just open `localhost:3000`
+
+2.`docker-componse down -v` - to stop the containers and remove used volumnes

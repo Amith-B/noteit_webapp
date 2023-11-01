@@ -1,0 +1,34 @@
+version: "3"
+services:
+  server:
+    container_name: noteit-server
+    build:
+      context: ./server
+      # dockerfile: ./server.Dockerfile
+      # dockerfile_inline: |
+      #   FROM node:14
+      #   WORKDIR /app
+      #   COPY package*.json ./
+      #   RUN npm install
+      #   EXPOSE 3001
+      #   CMD [ "npm", "run", "start-dev-server" ]
+    ports:
+      - "3001:3001"
+    volumes:
+      - ${PWD}/server:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  client:
+    container_name: noteit-client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ${PWD}/client:/app
+      - /app/node_modules
+    build:
+      context: ./client
+      # dockerfile: ./client.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - server
