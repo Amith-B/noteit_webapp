@@ -26,6 +26,24 @@ Once the build is generated in `client/build` folder, this folder can be used to
 `npm run build`<br/>
 This will generate the build in `server/build` folder.
 
+## Environment variables
+
+### Save below variables in `.env` file in respective folders
+
+#### server
+
+`TOKEN_SECRET="YOUR_JWT_TOKEN_SECRET"`
+`MONGODB_URL="YOUR_MONGODB_URL"`
+`DATA_ENCRYPTION_KEY="ANY_SECRET_KEY_FOR_DATA_ENCRYPTION"`
+`HOST_URL="FONTEND_URL"`
+
+`NODE_MAILER_USER="your_mail@gmail.com"`
+`NODE_MAILER_PASS="MAIL_PASSWORD"`
+
+#### client
+
+`REACT_APP_BACKEND_URL="BACKEND_URL"`
+
 ## Random key generation
 
 `openssl rand -hex 24`
