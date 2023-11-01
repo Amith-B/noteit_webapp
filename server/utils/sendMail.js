@@ -10,14 +10,18 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendMail(sendTo, subject, html) {
-  const info = await transporter.sendMail({
-    from: '"NoteIt" <noteitextension@gmail.com>',
-    to: sendTo,
-    subject,
-    html,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: '"NoteIt" <noteitextension@gmail.com>',
+      to: sendTo,
+      subject,
+      html,
+    });
 
-  return info;
+    return info;
+  } catch (error) {
+    return null;
+  }
 }
 
 async function sendEmailVerifyMail(sendTo, verificationToken) {
