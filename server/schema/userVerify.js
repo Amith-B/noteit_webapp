@@ -10,7 +10,7 @@ const userVerifySchema = new mongoose.Schema(
     expireAt: {
       type: Date,
       default: new Date(),
-      expires: 600,
+      expires: 900,
     },
   },
   { timestamps: true }

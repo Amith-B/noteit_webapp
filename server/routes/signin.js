@@ -125,7 +125,7 @@ router.post("/", async (req, res) => {
       JSON.stringify({
         customMessage: true,
         message:
-          "Verification mail sent to your mail id, please verify before signing in. Link valid for 10mins",
+          "Verification mail sent to your mail id, please verify before signing in. Link valid for 15mins",
       })
     );
   }
@@ -159,7 +159,7 @@ router.post("/forgotpassword", async (req, res) => {
       JSON.stringify({
         customMessage: true,
         message:
-          "Verification mail sent to your mail id, please verify and reset the password. Link valid for 10mins",
+          "Verification mail sent to your mail id, please verify and reset the password. Link valid for 15mins",
       })
     );
   } else {
